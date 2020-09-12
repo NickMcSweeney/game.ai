@@ -1,0 +1,4 @@
+SerpentOzymandiasGameAgentPlugin:
+  frame_handler: PLAY
+SerpentZeroADGamePlugin:
+  fps: 2
