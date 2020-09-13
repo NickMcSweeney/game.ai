@@ -34,6 +34,11 @@ This project used [Poetry](https://github.com/python-poetry/poetry) for managing
 #### First Time Setup
 
 + Run `poetry env use PATH_TO_PYTHON_3.6.5`
+    - if you are using **pyenv** to manage versions
+    - `pyenv install 3.6.5`
+    - `pyenv local 3.6.5`
+    - `poetry env use $(pyenv which python)`
+
 + Run `poetry update && poetry install`
 + Install Tesseract and run `poetry run serpent setup ocr` for language support
 + Run `poetry run serpent setup ml` to enable/install tensorflow

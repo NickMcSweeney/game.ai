@@ -6,8 +6,11 @@ authors = ["Nicholas Shindler"]
 
 [tool.poetry.dependencies]
 python = "3.6"
+cython = "0.26.1"
 
 [tool.poetry.dev-dependencies]
+wheel = "*"
+setuptools = "*"
 serpentai = "^2018.1.2"
 
 [build-system]
