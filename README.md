@@ -1,12 +1,17 @@
 # Video Game Ai
 
-### With [Serpent.Ai](https://github.com/SerpentAI/SerpentAI)
+> With [Serpent.Ai](https://github.com/SerpentAI/SerpentAI)
 
-## [ZeroAD](https://play0ad.com/)
+This a project building a RTS game AI using the SerpentAI Framework. The initial goal is to get a version working with 0 A.D. and potentially extend it to work in an Age of Empire game.
+This is starting with 0 A.D. because it is OpenSource and hopefully is will make it a bit easier to work with.
+
+## Packages
+
+#### Game Package: [ZeroAD](https://play0ad.com/)
 
 > Open Source, cross-platform, realtime strategy game
 
-## Ozymandias
+#### Game Agent Package: Ozymandias
 
 > AI for playing *0 A.D.*
 
@@ -14,9 +19,9 @@
 
 ## TODO:
 
-- [] setup testing (done using poetry integration)
-- [] setup subpackage structure
-- [] define screen regions
+- [ ] setup testing (done using poetry integration)
+- [ ] setup subpackage structure
+- [ ] define screen regions
 
 ---
 
@@ -46,4 +51,4 @@ This project used [Poetry](https://github.com/python-poetry/poetry) for managing
 
 ## Editing
 
-
+...
