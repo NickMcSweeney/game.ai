@@ -2,7 +2,7 @@
 
 > With [Serpent.Ai](https://github.com/SerpentAI/SerpentAI)
 
-This a project building a RTS game AI using the SerpentAI Framework. The initial goal is to get a version working with 0 A.D. and potentially extend it to work in an Age of Empire game.
+This a project building a RTS game AI (for now -- maybe others later) using the SerpentAI Framework. The initial goal is to get a version working with 0 A.D. and potentially extend it to work in an Age of Empire game.
 This is starting with 0 A.D. because it is OpenSource and hopefully is will make it a bit easier to work with.
 
 ## Packages
@@ -28,6 +28,8 @@ This is starting with 0 A.D. because it is OpenSource and hopefully is will make
 ## Setup
 
 This project used [Poetry](https://github.com/python-poetry/poetry) for managing python version (plus other things).
+
+> If you don't want to bother with all this, just run the `setup.sh` script, it will perform all the following tasks. At that point you are free to *Launch* the AI
 
 + In *game.ai* `git pull` latest version
 
@@ -56,4 +58,11 @@ This project used [Poetry](https://github.com/python-poetry/poetry) for managing
 
 ## Editing
 
-...
+I am experimenting using Cython with this project as well as C/C++ libraries. Cython will allow interation with C/C++ and compiles Python code (`.pyx`) into C.
+
+
+## Testing
+
+Testing is handled by Poetry using `pytest`.
+
+As this *should* be a performance critical application, testing will focus on speed using `pytest-benchmark` as well as .

@@ -12,6 +12,9 @@ cython = "0.26.1"
 wheel = "*"
 setuptools = "*"
 serpentai = "^2018.1.2"
+pytest = "*"
+pytest-cov = "*"
+pytest-benchmark = "*"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -4,16 +4,20 @@
 
 git pull &&\\
 
-echo "\n\nUp to date with GIT\n";
+echo ""
+echo "Up to date with GIT";
 
-pyenv install 3.6.5 && pyenv local 3.6.5 && poetry env use $(pyenv which python) &&\\
+pyenv install -sv 3.6.5 && pyenv local 3.6.5 && poetry env use $(pyenv which python) &&\\
 
-echo "\n\n Py ENV setup.\n Setting up poetry...\n" &&\\
+echo ""
+echo "Py ENV setup./n Setting up poetry..." &&\\
 
 poetry update && poetry install &&\\
 
-echo "\n\n Seting up serpent \n\n" &&\\
+echo ""
+echo "Seting up serpent" &&\\
 
 poetry run serpent setup ocr && poetry run serpent setup ml && poetry run serpent update &&\\
 
-echo "\n\n==== Completed Project Setup ====\n"
+echo ""
+echo "==== Completed Project Setup ===="

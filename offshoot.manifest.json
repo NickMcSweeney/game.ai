@@ -1,5 +1,50 @@
 {
     "plugins": {
+        "SerpentOzymandiasGameAgentPlugin": {
+            "name": "SerpentOzymandiasGameAgentPlugin",
+            "version": "0.1.0",
+            "files": [
+                {
+                    "path": "serpent_Ozymandias_game_agent.py",
+                    "pluggable": "GameAgent"
+                }
+            ],
+            "plugins": [],
+            "libraries": [],
+            "config": {
+                "frame_handler": "PLAY"
+            }
+        },
+        "SerpentkapmanGamePlugin": {
+            "name": "SerpentkapmanGamePlugin",
+            "version": "0.1.0",
+            "files": [
+                {
+                    "path": "serpent_kapman_game.py",
+                    "pluggable": "Game"
+                }
+            ],
+            "plugins": [],
+            "libraries": [],
+            "config": {
+                "fps": 2
+            }
+        },
+        "SerpentIndiJGameAgentPlugin": {
+            "name": "SerpentIndiJGameAgentPlugin",
+            "version": "0.1.0",
+            "files": [
+                {
+                    "path": "serpent_IndiJ_game_agent.py",
+                    "pluggable": "GameAgent"
+                }
+            ],
+            "plugins": [],
+            "libraries": [],
+            "config": {
+                "frame_handler": "PLAY"
+            }
+        },
         "SerpentZeroADGamePlugin": {
             "name": "SerpentZeroADGamePlugin",
             "version": "0.1.0",
@@ -15,19 +60,19 @@
                 "fps": 2
             }
         },
-        "SerpentOzymandiasGameAgentPlugin": {
-            "name": "SerpentOzymandiasGameAgentPlugin",
+        "SerpentTronGamePlugin": {
+            "name": "SerpentTronGamePlugin",
             "version": "0.1.0",
             "files": [
                 {
-                    "path": "serpent_Ozymandias_game_agent.py",
-                    "pluggable": "GameAgent"
+                    "path": "serpent_Tron_game.py",
+                    "pluggable": "Game"
                 }
             ],
             "plugins": [],
             "libraries": [],
             "config": {
-                "frame_handler": "PLAY"
+                "fps": 2
             }
         }
     }
