@@ -2,7 +2,6 @@ from serpent.game_agent import GameAgent
 
 
 class SerpentIndiJGameAgent(GameAgent):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -14,4 +13,4 @@ class SerpentIndiJGameAgent(GameAgent):
         pass
 
     def handle_play(self, game_frame):
-        pass
+        print("hello world")

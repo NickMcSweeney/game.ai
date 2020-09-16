@@ -213,6 +213,17 @@ version = "5.3.1"
 
 [[package]]
 category = "dev"
+description = "Python client for Redis key-value store"
+name = "redis"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "3.5.3"
+
+[package.extras]
+hiredis = ["hiredis (>=0.1.3)"]
+
+[[package]]
+category = "dev"
 description = "Game Agent Development Kit. Helping you create AIs / Bots to play any game you own!"
 name = "serpentai"
 optional = false
@@ -264,7 +275,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "532c269029d44eddc67464f9e840582eea525ba26221bc4c0e6376e600968639"
+content-hash = "6a1ef5ca816d5cda7812dd7467ba1282870b464de8091241c7813206d9382dc1"
 python-versions = "3.6"
 
 [metadata.files]
@@ -410,6 +421,10 @@ pyyaml = [
     {file = "PyYAML-5.3.1-cp38-cp38-win32.whl", hash = "sha256:06a0d7ba600ce0b2d2fe2e78453a470b5a6e000a985dd4a4e54e436cc36b0e97"},
     {file = "PyYAML-5.3.1-cp38-cp38-win_amd64.whl", hash = "sha256:95f71d2af0ff4227885f7a6605c37fd53d3a106fcab511b8860ecca9fcf400ee"},
     {file = "PyYAML-5.3.1.tar.gz", hash = "sha256:b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d"},
+]
+redis = [
+    {file = "redis-3.5.3-py2.py3-none-any.whl", hash = "sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24"},
+    {file = "redis-3.5.3.tar.gz", hash = "sha256:0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2"},
 ]
 serpentai = [
     {file = "SerpentAI-2018.1.2.tar.gz", hash = "sha256:36c54ab02d38508840aa0b5ee47d07f69ef21bb337040c213db77cfb2d85f3fa"},

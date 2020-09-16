@@ -29,6 +29,8 @@ This is starting with 0 A.D. because it is OpenSource and hopefully is will make
 
 This project used [Poetry](https://github.com/python-poetry/poetry) for managing python version (plus other things).
 
+This project uses the SerpentAI framework and therefore requires **Redis** to be installed and running on your computer. Go [here](https://github.com/SerpentAI/SerpentAI/wiki/Linux-Installation-Guide#redis) for more info.
+
 > If you don't want to bother with all this, just run the `setup.sh` script, it will perform all the following tasks. At that point you are free to *Launch* the AI
 
 + In *game.ai* `git pull` latest version

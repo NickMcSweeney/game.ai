@@ -30,21 +30,6 @@
                 "fps": 2
             }
         },
-        "SerpentIndiJGameAgentPlugin": {
-            "name": "SerpentIndiJGameAgentPlugin",
-            "version": "0.1.0",
-            "files": [
-                {
-                    "path": "serpent_IndiJ_game_agent.py",
-                    "pluggable": "GameAgent"
-                }
-            ],
-            "plugins": [],
-            "libraries": [],
-            "config": {
-                "frame_handler": "PLAY"
-            }
-        },
         "SerpentZeroADGamePlugin": {
             "name": "SerpentZeroADGamePlugin",
             "version": "0.1.0",
@@ -73,6 +58,21 @@
             "libraries": [],
             "config": {
                 "fps": 2
+            }
+        },
+        "SerpentTronGameAgentPlugin": {
+            "name": "SerpentTronGameAgentPlugin",
+            "version": "0.1.0",
+            "files": [
+                {
+                    "path": "serpent_Tron_game_agent.py",
+                    "pluggable": "GameAgent"
+                }
+            ],
+            "plugins": [],
+            "libraries": [],
+            "config": {
+                "frame_handler": "PLAY"
             }
         }
     }

@@ -1,6 +1,6 @@
-SerpentIndiJGameAgentPlugin:
-  frame_handler: PLAY
 SerpentOzymandiasGameAgentPlugin:
+  frame_handler: PLAY
+SerpentTronGameAgentPlugin:
   frame_handler: PLAY
 SerpentTronGamePlugin:
   fps: 2
