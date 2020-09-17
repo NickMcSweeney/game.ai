@@ -7,8 +7,6 @@ authors = ["Nicholas Shindler"]
 [tool.poetry.dependencies]
 python = "3.6"
 cython = "0.26.1"
-tensorflow = "*"
-tf-agents = "*"
 
 [tool.poetry.dev-dependencies]
 wheel = "*"

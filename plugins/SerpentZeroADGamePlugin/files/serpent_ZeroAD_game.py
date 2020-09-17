@@ -28,7 +28,10 @@ class SerpentZeroADGame(Game, metaclass=Singleton):
     @property
     def screen_regions(self):
         regions = {
-            "SAMPLE_REGION": (0, 0, 0, 0)
+            "START_GAME_1": (190, 72, 218, 288),
+            "START_GAME_2": (192, 300, 219, 536),
+            "START_GAME_3": (1005, 1756, 1033, 1896),
+            "SELECT_FREE_UNIT": (1031, 455, 1003, 426)
         }
 
         return regions
@@ -36,14 +39,14 @@ class SerpentZeroADGame(Game, metaclass=Singleton):
     @property
     def ocr_presets(self):
         presets = {
-            "SAMPLE_PRESET": {
+            "DEFAULT": {
                 "extract": {
-                    "gradient_size": 1,
-                    "closing_size": 1
+                    "gradient_size": 3,
+                    "closing_size": 10
                 },
                 "perform": {
-                    "scale": 10,
-                    "order": 1,
+                    "scale": 16,
+                    "order": 3,
                     "horizontal_closing": 1,
                     "vertical_closing": 1
                 }
