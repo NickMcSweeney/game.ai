@@ -22,14 +22,17 @@ class SerpentOzymandiasGameAgent(GameAgent):
         if(self.context == "main_menu"):
             print("New Game")
             self.game.api.MainMenu.click_single_player()
+            time.sleep(1)
             self.context = "main_menu_single_player"
         elif(self.context == "main_menu_single_player"):
             print("Single Player Game")
             self.game.api.MainMenu.click_matches()
+            time.sleep(1)
             self.context = "main_menu_matches"
         elif(self.context == "main_menu_matches"):
             print("Start New Game")
             self.game.api.MainMenu.click_start_game()
+            time.sleep(1)
             self.context = "playing_game"
         elif(self.context == "playing_game"):
             print("playing game")
