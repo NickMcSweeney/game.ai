@@ -28,9 +28,11 @@ class SerpentZeroADGame(Game, metaclass=Singleton):
     @property
     def screen_regions(self):
         regions = {
-            "START_GAME_1": (190, 72, 218, 288),
-            "START_GAME_2": (192, 300, 219, 536),
-            "START_GAME_3": (1005, 1756, 1033, 1896),
+            "FOOD": (3, 33, 33, 100), 
+            "WOOD": (3, 128, 33, 194),
+            "STONE": (3, 222, 33, 290),
+            "IRON": (3, 316, 33, 375),
+            "POPULATION": (2, 405, 34, 492),
             "SELECT_FREE_UNIT": (1031, 455, 1003, 426)
         }
 
