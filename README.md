@@ -62,6 +62,11 @@ This project uses the SerpentAI framework and therefore requires **Redis** to be
 
 I am experimenting using Cython with this project as well as C/C++ libraries. Cython will allow interation with C/C++ and compiles Python code (`.pyx`) into C.
 
+#### Running Cython Compiler
+
+The `.pyx` files must be compiled before they can be added to the Plugins. The `setup.py` file can be used to compile the cython files.
+
+To compile the libraries, run `poetry run python setup.py build_ext --inplace`.
 
 ## Testing
 

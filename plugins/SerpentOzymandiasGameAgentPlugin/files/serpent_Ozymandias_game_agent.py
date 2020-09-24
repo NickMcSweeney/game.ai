@@ -47,11 +47,11 @@ class SerpentOzymandiasGameAgent(GameAgent):
             print("playing game")
             
             try:
-                food_count = int(self.game.api.InGame.get_region_text("FOOD").replace(" ", ""))
-                wood_count = int(self.game.api.InGame.get_region_text("WOOD").replace(" ", ""))
-                stone_count = int(self.game.api.InGame.get_region_text("STONE").replace(" ", ""))
-                iron_count = int(self.game.api.InGame.get_region_text("IRON").replace(" ", ""))
-                population = self.game.api.InGame.get_region_text("POPULATION")
+                food_count = int(self.game.api.Game.get_region_text("FOOD").replace(" ", ""))
+                wood_count = int(self.game.api.Game.get_region_text("WOOD").replace(" ", ""))
+                stone_count = int(self.game.api.Game.get_region_text("STONE").replace(" ", ""))
+                iron_count = int(self.game.api.Game.get_region_text("IRON").replace(" ", ""))
+                population = self.game.api.Game.get_region_text("POPULATION")
 
                 print("Population: " + population)
                 pop_arr = population.split("/")
