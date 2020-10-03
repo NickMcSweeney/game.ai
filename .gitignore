@@ -1,4 +1,10 @@
-  # Created by https://www.toptal.com/developers/gitignore/api/python,c,c++,visualstudio,visualstudiocode,vim
+## Custom ignores:
+
+datasets/*
+
+## --- --- --- ##
+
+# Created by https://www.toptal.com/developers/gitignore/api/python,c,c++,visualstudio,visualstudiocode,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,c,c++,visualstudio,visualstudiocode,vim
 
 ### C ###
