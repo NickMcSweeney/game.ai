@@ -28,6 +28,7 @@ class SerpentZeroADGame(Game, metaclass=Singleton):
     @property
     def screen_regions(self):
         regions = {
+            "MENU": (1, 60, 1000, 300),
             "FOOD": (3, 33, 33, 100), 
             "WOOD": (3, 128, 33, 194),
             "STONE": (3, 222, 33, 290),
@@ -56,3 +57,32 @@ class SerpentZeroADGame(Game, metaclass=Singleton):
         }
 
         return presets
+
+    @property
+    def points(self):
+        points = {
+            "food": {
+                "current": 300,
+                "change": 0,
+            },
+            "wood": {
+                "current": 300,
+                "change": 0,
+            },
+            "stone": {
+                "current": 300,
+                "change": 0,
+            },
+            "iron": {
+                "current": 300,
+                "change": 0,
+            },
+            "population": {
+                "total": 0,
+                "current": 0,
+                "change": 0,
+            }
+        }
+        
+        return points
+

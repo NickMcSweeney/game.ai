@@ -7,10 +7,10 @@ authors = ["Nicholas Shindler"]
 [tool.poetry.dependencies]
 python = "3.6"
 cython = "0.26.1"
+tensorflow = "^2.3"
 numpy = "*"
-keras = "*"
-tensorflow = "2.2"
-tensorflow-cpu = "2.2"
+keras = "^2.3"
+opencv-python = "*"
 
 
 [tool.poetry.dev-dependencies]
@@ -21,7 +21,6 @@ pytest = "*"
 pytest-cov = "*"
 pytest-benchmark = "*"
 redis = "*"
-tensorflow-estimator = "*"
 
 [build-system]
 requires = ["poetry>=0.12"]

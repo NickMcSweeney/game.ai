@@ -798,9 +798,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 #define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
-/* GetModuleGlobalName.proto */
-static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
-
 /* PyCFunctionFastCall.proto */
 #if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
@@ -833,6 +830,67 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
 #else
 #define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
 #endif
+
+/* GetModuleGlobalName.proto */
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
+
+/* PyThreadStateGet.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
+#define __Pyx_PyThreadState_assign  __pyx_tstate = PyThreadState_GET();
+#else
+#define __Pyx_PyThreadState_declare
+#define __Pyx_PyThreadState_assign
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* PyErrExceptionMatches.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
+#else
+#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
+#endif
+
+/* GetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+#endif
+
+/* GetItemInt.proto */
+#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
+    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
+               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
+#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
+                                                     int is_list, int wraparound, int boundscheck);
 
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
@@ -939,14 +997,14 @@ static PyObject* __pyx_print = 0;
 static PyObject* __pyx_print_kwargs = 0;
 #endif
 
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
+
 /* PrintOne.proto */
 static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
 
 /* CyFunctionClassCell.proto */
 static CYTHON_INLINE int __Pyx_CyFunction_InitClassCell(PyObject *cyfunctions, PyObject *classobj);
-
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
@@ -967,134 +1025,236 @@ int __pyx_module_is_main_SerpentZeroADGamePlugin__files__api__api = 0;
 
 /* Implementation of 'SerpentZeroADGamePlugin.files.api.api' */
 static PyObject *__pyx_builtin_super;
+static PyObject *__pyx_builtin_ValueError;
+static const char __pyx_k_X[] = "X";
+static const char __pyx_k_Y[] = "Y";
+static const char __pyx_k_e[] = "e";
+static const char __pyx_k_x[] = "x";
+static const char __pyx_k_y[] = "y";
+static const char __pyx_k__2[] = " ";
+static const char __pyx_k__3[] = "";
 static const char __pyx_k_cv[] = "cv";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_os[] = "os";
+static const char __pyx_k__12[] = "/";
 static const char __pyx_k_api[] = "api";
 static const char __pyx_k_cls[] = "cls";
 static const char __pyx_k_doc[] = "__doc__";
 static const char __pyx_k_end[] = "end";
 static const char __pyx_k_ocr[] = "ocr";
-static const char __pyx_k_Game[] = "Game";
+static const char __pyx_k_FOOD[] = "FOOD";
+static const char __pyx_k_IRON[] = "IRON";
 static const char __pyx_k_LEFT[] = "LEFT";
+static const char __pyx_k_MOVE[] = "MOVE";
+static const char __pyx_k_WOOD[] = "WOOD";
 static const char __pyx_k_file[] = "file";
+static const char __pyx_k_food[] = "food";
 static const char __pyx_k_game[] = "game";
 static const char __pyx_k_init[] = "__init__";
+static const char __pyx_k_iron[] = "iron";
 static const char __pyx_k_join[] = "join";
 static const char __pyx_k_main[] = "__main__";
+static const char __pyx_k_move[] = "move";
 static const char __pyx_k_self[] = "self";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_text[] = "text";
+static const char __pyx_k_wood[] = "wood";
+static const char __pyx_k_RIGHT[] = "RIGHT";
+static const char __pyx_k_STONE[] = "STONE";
+static const char __pyx_k_click[] = "click";
 static const char __pyx_k_frame[] = "frame";
 static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_print[] = "print";
+static const char __pyx_k_score[] = "score";
+static const char __pyx_k_split[] = "split";
+static const char __pyx_k_stone[] = "stone";
 static const char __pyx_k_super[] = "super";
+static const char __pyx_k_total[] = "total";
+static const char __pyx_k_width[] = "width";
 static const char __pyx_k_Sprite[] = "Sprite";
+static const char __pyx_k_button[] = "button";
+static const char __pyx_k_change[] = "change";
+static const char __pyx_k_choice[] = "choice";
+static const char __pyx_k_height[] = "height";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_isfile[] = "isfile";
 static const char __pyx_k_module[] = "__module__";
+static const char __pyx_k_points[] = "points";
 static const char __pyx_k_preset[] = "preset";
+static const char __pyx_k_random[] = "random";
 static const char __pyx_k_DEFAULT[] = "DEFAULT";
 static const char __pyx_k_GameAPI[] = "GameAPI";
 static const char __pyx_k_Matches[] = "Matches";
 static const char __pyx_k_abspath[] = "abspath";
 static const char __pyx_k_api_pyx[] = "api.pyx";
+static const char __pyx_k_current[] = "current";
 static const char __pyx_k_listdir[] = "listdir";
 static const char __pyx_k_os_path[] = "os.path";
 static const char __pyx_k_prepare[] = "__prepare__";
+static const char __pyx_k_replace[] = "replace";
 static const char __pyx_k_serpent[] = "serpent";
 static const char __pyx_k_skimage[] = "skimage";
 static const char __pyx_k_MainMenu[] = "MainMenu";
+static const char __pyx_k_click_up[] = "click_up";
+static const char __pyx_k_duration[] = "duration";
 static const char __pyx_k_instance[] = "instance";
 static const char __pyx_k_qualname[] = "__qualname__";
+static const char __pyx_k_Moving_on[] = "Moving on";
 static const char __pyx_k_ZeroADAPI[] = "ZeroADAPI";
 static const char __pyx_k_metaclass[] = "__metaclass__";
+static const char __pyx_k_move_view[] = "move_view";
+static const char __pyx_k_randrange[] = "randrange";
+static const char __pyx_k_CLICK_DRAG[] = "CLICK & DRAG";
+static const char __pyx_k_GameAction[] = "GameAction";
+static const char __pyx_k_LEFT_CLICK[] = "LEFT CLICK";
+static const char __pyx_k_POPULATION[] = "POPULATION";
 static const char __pyx_k_Start_Game[] = "Start Game!";
-static const char __pyx_k_food_image[] = "food_image";
+static const char __pyx_k_ValueError[] = "ValueError";
+static const char __pyx_k_click_down[] = "click_down";
 static const char __pyx_k_game_frame[] = "game_frame";
+static const char __pyx_k_get_points[] = "get_points";
+static const char __pyx_k_population[] = "population";
 static const char __pyx_k_serpent_cv[] = "serpent.cv";
 static const char __pyx_k_skimage_io[] = "skimage.io";
 static const char __pyx_k_MouseButton[] = "MouseButton";
+static const char __pyx_k_RIGHT_CLICK[] = "RIGHT CLICK";
 static const char __pyx_k_ocr_presets[] = "ocr_presets";
 static const char __pyx_k_perform_ocr[] = "perform_ocr";
 static const char __pyx_k_region_name[] = "region_name";
 static const char __pyx_k_serpent_ocr[] = "serpent.ocr";
+static const char __pyx_k_take_action[] = "take_action";
 static const char __pyx_k_click_string[] = "click_string";
+static const char __pyx_k_region_image[] = "region_image";
+static const char __pyx_k_GameInterface[] = "GameInterface";
 static const char __pyx_k_Single_Player[] = "Single Player";
 static const char __pyx_k_SpriteLocator[] = "SpriteLocator";
 static const char __pyx_k_click_matches[] = "click_matches";
-static const char __pyx_k_ZeroADAPI_Game[] = "ZeroADAPI.Game";
 static const char __pyx_k_screen_regions[] = "screen_regions";
 static const char __pyx_k_serpent_sprite[] = "serpent.sprite";
 static const char __pyx_k_get_region_text[] = "get_region_text";
 static const char __pyx_k_grayscale_frame[] = "grayscale_frame";
 static const char __pyx_k_my_api_function[] = "my_api_function";
+static const char __pyx_k_window_geometry[] = "window_geometry";
 static const char __pyx_k_ZeroADAPI___init[] = "ZeroADAPI.__init__";
 static const char __pyx_k_click_start_game[] = "click_start_game";
 static const char __pyx_k_input_controller[] = "input_controller";
 static const char __pyx_k_make_random_move[] = "make_random_move";
 static const char __pyx_k_serpent_game_api[] = "serpent.game_api";
 static const char __pyx_k_grab_latest_frame[] = "grab_latest_frame";
+static const char __pyx_k_update_food_score[] = "update_food_score";
+static const char __pyx_k_update_iron_score[] = "update_iron_score";
+static const char __pyx_k_update_wood_score[] = "update_wood_score";
 static const char __pyx_k_ZeroADAPI_MainMenu[] = "ZeroADAPI.MainMenu";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
+static const char __pyx_k_update_stone_score[] = "update_stone_score";
 static const char __pyx_k_click_single_player[] = "click_single_player";
+static const char __pyx_k_ZeroADAPI_GameAction[] = "ZeroADAPI.GameAction";
 static const char __pyx_k_serpent_sprite_locator[] = "serpent.sprite_locator";
+static const char __pyx_k_ZeroADAPI_GameInterface[] = "ZeroADAPI.GameInterface";
+static const char __pyx_k_update_population_score[] = "update_population_score";
 static const char __pyx_k_serpent_input_controller[] = "serpent.input_controller";
+static const char __pyx_k_ZeroADAPI_get_region_text[] = "ZeroADAPI.get_region_text";
 static const char __pyx_k_ZeroADAPI_my_api_function[] = "ZeroADAPI.my_api_function";
 static const char __pyx_k_extract_region_from_image[] = "extract_region_from_image";
-static const char __pyx_k_ZeroADAPI_Game_get_region_text[] = "ZeroADAPI.Game.get_region_text";
-static const char __pyx_k_ZeroADAPI_Game_make_random_move[] = "ZeroADAPI.Game.make_random_move";
+static const char __pyx_k_ZeroADAPI_GameAction_move_view[] = "ZeroADAPI.GameAction.move_view";
 static const char __pyx_k_ZeroADAPI_MainMenu_click_single[] = "ZeroADAPI.MainMenu.click_single_player";
 static const char __pyx_k_SerpentZeroADGamePlugin_files_ap[] = "SerpentZeroADGamePlugin.files.api.api";
+static const char __pyx_k_ZeroADAPI_GameAction_make_random[] = "ZeroADAPI.GameAction.make_random_move";
+static const char __pyx_k_ZeroADAPI_GameAction_take_action[] = "ZeroADAPI.GameAction.take_action";
+static const char __pyx_k_ZeroADAPI_GameInterface_get_poin[] = "ZeroADAPI.GameInterface.get_points";
+static const char __pyx_k_ZeroADAPI_GameInterface_update_f[] = "ZeroADAPI.GameInterface.update_food_score";
+static const char __pyx_k_ZeroADAPI_GameInterface_update_i[] = "ZeroADAPI.GameInterface.update_iron_score";
+static const char __pyx_k_ZeroADAPI_GameInterface_update_p[] = "ZeroADAPI.GameInterface.update_population_score";
+static const char __pyx_k_ZeroADAPI_GameInterface_update_s[] = "ZeroADAPI.GameInterface.update_stone_score";
+static const char __pyx_k_ZeroADAPI_GameInterface_update_w[] = "ZeroADAPI.GameInterface.update_wood_score";
 static const char __pyx_k_ZeroADAPI_MainMenu_click_matches[] = "ZeroADAPI.MainMenu.click_matches";
 static const char __pyx_k_ZeroADAPI_MainMenu_click_start_g[] = "ZeroADAPI.MainMenu.click_start_game";
+static PyObject *__pyx_kp_s_CLICK_DRAG;
 static PyObject *__pyx_n_s_DEFAULT;
-static PyObject *__pyx_n_s_Game;
+static PyObject *__pyx_n_s_FOOD;
 static PyObject *__pyx_n_s_GameAPI;
+static PyObject *__pyx_n_s_GameAction;
+static PyObject *__pyx_n_s_GameInterface;
+static PyObject *__pyx_n_s_IRON;
 static PyObject *__pyx_n_s_LEFT;
+static PyObject *__pyx_kp_s_LEFT_CLICK;
+static PyObject *__pyx_n_s_MOVE;
 static PyObject *__pyx_n_s_MainMenu;
 static PyObject *__pyx_n_s_Matches;
 static PyObject *__pyx_n_s_MouseButton;
+static PyObject *__pyx_kp_s_Moving_on;
+static PyObject *__pyx_n_s_POPULATION;
+static PyObject *__pyx_n_s_RIGHT;
+static PyObject *__pyx_kp_s_RIGHT_CLICK;
+static PyObject *__pyx_n_s_STONE;
 static PyObject *__pyx_n_s_SerpentZeroADGamePlugin_files_ap;
 static PyObject *__pyx_kp_s_Single_Player;
 static PyObject *__pyx_n_s_Sprite;
 static PyObject *__pyx_n_s_SpriteLocator;
 static PyObject *__pyx_kp_s_Start_Game;
+static PyObject *__pyx_n_s_ValueError;
+static PyObject *__pyx_n_s_WOOD;
+static PyObject *__pyx_n_s_X;
+static PyObject *__pyx_n_s_Y;
 static PyObject *__pyx_n_s_ZeroADAPI;
-static PyObject *__pyx_n_s_ZeroADAPI_Game;
-static PyObject *__pyx_n_s_ZeroADAPI_Game_get_region_text;
-static PyObject *__pyx_n_s_ZeroADAPI_Game_make_random_move;
+static PyObject *__pyx_n_s_ZeroADAPI_GameAction;
+static PyObject *__pyx_n_s_ZeroADAPI_GameAction_make_random;
+static PyObject *__pyx_n_s_ZeroADAPI_GameAction_move_view;
+static PyObject *__pyx_n_s_ZeroADAPI_GameAction_take_action;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_get_poin;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_update_f;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_update_i;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_update_p;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_update_s;
+static PyObject *__pyx_n_s_ZeroADAPI_GameInterface_update_w;
 static PyObject *__pyx_n_s_ZeroADAPI_MainMenu;
 static PyObject *__pyx_n_s_ZeroADAPI_MainMenu_click_matches;
 static PyObject *__pyx_n_s_ZeroADAPI_MainMenu_click_single;
 static PyObject *__pyx_n_s_ZeroADAPI_MainMenu_click_start_g;
 static PyObject *__pyx_n_s_ZeroADAPI___init;
+static PyObject *__pyx_n_s_ZeroADAPI_get_region_text;
 static PyObject *__pyx_n_s_ZeroADAPI_my_api_function;
+static PyObject *__pyx_kp_s__12;
+static PyObject *__pyx_kp_s__2;
+static PyObject *__pyx_kp_s__3;
 static PyObject *__pyx_n_s_abspath;
 static PyObject *__pyx_n_s_api;
 static PyObject *__pyx_kp_s_api_pyx;
+static PyObject *__pyx_n_s_button;
+static PyObject *__pyx_n_s_change;
+static PyObject *__pyx_n_s_choice;
+static PyObject *__pyx_n_s_click;
+static PyObject *__pyx_n_s_click_down;
 static PyObject *__pyx_n_s_click_matches;
 static PyObject *__pyx_n_s_click_single_player;
 static PyObject *__pyx_n_s_click_start_game;
 static PyObject *__pyx_n_s_click_string;
+static PyObject *__pyx_n_s_click_up;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_cls;
+static PyObject *__pyx_n_s_current;
 static PyObject *__pyx_n_s_cv;
 static PyObject *__pyx_n_s_doc;
+static PyObject *__pyx_n_s_duration;
+static PyObject *__pyx_n_s_e;
 static PyObject *__pyx_n_s_end;
 static PyObject *__pyx_n_s_extract_region_from_image;
 static PyObject *__pyx_n_s_file;
-static PyObject *__pyx_n_s_food_image;
+static PyObject *__pyx_n_s_food;
 static PyObject *__pyx_n_s_frame;
 static PyObject *__pyx_n_s_game;
 static PyObject *__pyx_n_s_game_frame;
+static PyObject *__pyx_n_s_get_points;
 static PyObject *__pyx_n_s_get_region_text;
 static PyObject *__pyx_n_s_grab_latest_frame;
 static PyObject *__pyx_n_s_grayscale_frame;
+static PyObject *__pyx_n_s_height;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_init;
 static PyObject *__pyx_n_s_input_controller;
 static PyObject *__pyx_n_s_instance;
+static PyObject *__pyx_n_s_iron;
 static PyObject *__pyx_n_s_isfile;
 static PyObject *__pyx_n_s_join;
 static PyObject *__pyx_n_s_listdir;
@@ -1102,6 +1262,8 @@ static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_make_random_move;
 static PyObject *__pyx_n_s_metaclass;
 static PyObject *__pyx_n_s_module;
+static PyObject *__pyx_n_s_move;
+static PyObject *__pyx_n_s_move_view;
 static PyObject *__pyx_n_s_my_api_function;
 static PyObject *__pyx_n_s_np;
 static PyObject *__pyx_n_s_numpy;
@@ -1110,11 +1272,18 @@ static PyObject *__pyx_n_s_ocr_presets;
 static PyObject *__pyx_n_s_os;
 static PyObject *__pyx_n_s_os_path;
 static PyObject *__pyx_n_s_perform_ocr;
+static PyObject *__pyx_n_s_points;
+static PyObject *__pyx_n_s_population;
 static PyObject *__pyx_n_s_prepare;
 static PyObject *__pyx_n_s_preset;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_qualname;
+static PyObject *__pyx_n_s_random;
+static PyObject *__pyx_n_s_randrange;
+static PyObject *__pyx_n_s_region_image;
 static PyObject *__pyx_n_s_region_name;
+static PyObject *__pyx_n_s_replace;
+static PyObject *__pyx_n_s_score;
 static PyObject *__pyx_n_s_screen_regions;
 static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_serpent;
@@ -1126,34 +1295,89 @@ static PyObject *__pyx_n_s_serpent_sprite;
 static PyObject *__pyx_n_s_serpent_sprite_locator;
 static PyObject *__pyx_n_s_skimage;
 static PyObject *__pyx_n_s_skimage_io;
+static PyObject *__pyx_n_s_split;
+static PyObject *__pyx_n_s_stone;
 static PyObject *__pyx_n_s_super;
+static PyObject *__pyx_n_s_take_action;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_text;
+static PyObject *__pyx_n_s_total;
+static PyObject *__pyx_n_s_update_food_score;
+static PyObject *__pyx_n_s_update_iron_score;
+static PyObject *__pyx_n_s_update_population_score;
+static PyObject *__pyx_n_s_update_stone_score;
+static PyObject *__pyx_n_s_update_wood_score;
+static PyObject *__pyx_n_s_width;
+static PyObject *__pyx_n_s_window_geometry;
+static PyObject *__pyx_n_s_wood;
+static PyObject *__pyx_n_s_x;
+static PyObject *__pyx_n_s_y;
 static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_game); /* proto */
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2my_api_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2get_region_text(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_region_name); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_4my_api_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_click_single_player(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
 static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2click_matches(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
 static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4click_start_game(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_get_region_text(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls, PyObject *__pyx_v_region_name); /* proto */
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_2make_random_move(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
-static PyObject *__pyx_int_1;
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_get_points(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_2update_food_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_4update_wood_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_6update_stone_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_8update_iron_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_10update_population_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_take_action(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_2move_view(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_4make_random_move(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_float_0_05;
+static PyObject *__pyx_float_0_25;
+static PyObject *__pyx_int_5;
+static PyObject *__pyx_int_20;
+static PyObject *__pyx_int_40;
+static PyObject *__pyx_int_50;
+static PyObject *__pyx_int_100;
 static PyObject *__pyx_tuple_;
-static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_tuple__4;
+static PyObject *__pyx_tuple__5;
 static PyObject *__pyx_tuple__6;
+static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__9;
 static PyObject *__pyx_tuple__10;
-static PyObject *__pyx_tuple__12;
+static PyObject *__pyx_tuple__11;
+static PyObject *__pyx_tuple__13;
 static PyObject *__pyx_tuple__14;
-static PyObject *__pyx_codeobj__2;
-static PyObject *__pyx_codeobj__5;
-static PyObject *__pyx_codeobj__7;
-static PyObject *__pyx_codeobj__9;
-static PyObject *__pyx_codeobj__11;
-static PyObject *__pyx_codeobj__13;
-static PyObject *__pyx_codeobj__15;
+static PyObject *__pyx_tuple__15;
+static PyObject *__pyx_tuple__17;
+static PyObject *__pyx_tuple__18;
+static PyObject *__pyx_tuple__20;
+static PyObject *__pyx_tuple__22;
+static PyObject *__pyx_tuple__24;
+static PyObject *__pyx_tuple__26;
+static PyObject *__pyx_tuple__28;
+static PyObject *__pyx_tuple__30;
+static PyObject *__pyx_tuple__32;
+static PyObject *__pyx_tuple__34;
+static PyObject *__pyx_tuple__36;
+static PyObject *__pyx_tuple__38;
+static PyObject *__pyx_tuple__40;
+static PyObject *__pyx_tuple__42;
+static PyObject *__pyx_tuple__44;
+static PyObject *__pyx_codeobj__16;
+static PyObject *__pyx_codeobj__19;
+static PyObject *__pyx_codeobj__21;
+static PyObject *__pyx_codeobj__23;
+static PyObject *__pyx_codeobj__25;
+static PyObject *__pyx_codeobj__27;
+static PyObject *__pyx_codeobj__29;
+static PyObject *__pyx_codeobj__31;
+static PyObject *__pyx_codeobj__33;
+static PyObject *__pyx_codeobj__35;
+static PyObject *__pyx_codeobj__37;
+static PyObject *__pyx_codeobj__39;
+static PyObject *__pyx_codeobj__41;
+static PyObject *__pyx_codeobj__43;
+static PyObject *__pyx_codeobj__45;
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":15
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":16
  * class ZeroADAPI(GameAPI):
  * 
  *     def __init__(self, game=None):             # <<<<<<<<<<<<<<
@@ -1198,7 +1422,7 @@ static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 16, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -1214,7 +1438,7 @@ static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 16, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.ZeroADAPI.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1235,17 +1459,17 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":16
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":17
  * 
  *     def __init__(self, game=None):
  *         super().__init__(game=game)             # <<<<<<<<<<<<<<
  * 
- *     def my_api_function(self):
+ *     def get_region_text(self, region_name):
  */
   __pyx_t_1 = __Pyx_CyFunction_GetClassObj(__pyx_self);
-  if (!__pyx_t_1) { PyErr_SetString(PyExc_SystemError, "super(): empty __class__ cell"); __PYX_ERR(0, 16, __pyx_L1_error) }
+  if (!__pyx_t_1) { PyErr_SetString(PyExc_SystemError, "super(): empty __class__ cell"); __PYX_ERR(0, 17, __pyx_L1_error) }
   __Pyx_INCREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -1253,22 +1477,22 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
   __Pyx_GIVEREF(__pyx_v_self);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_self);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_game, __pyx_v_game) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_game, __pyx_v_game) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":15
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":16
  * class ZeroADAPI(GameAPI):
  * 
  *     def __init__(self, game=None):             # <<<<<<<<<<<<<<
@@ -1291,8 +1515,319 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":18
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":19
  *         super().__init__(game=game)
+ * 
+ *     def get_region_text(self, region_name):             # <<<<<<<<<<<<<<
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3get_region_text(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3get_region_text = {"get_region_text", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3get_region_text, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3get_region_text(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_self = 0;
+  PyObject *__pyx_v_region_name = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_region_text (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_region_name,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_region_name)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("get_region_text", 1, 2, 2, 1); __PYX_ERR(0, 19, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_region_text") < 0)) __PYX_ERR(0, 19, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_self = values[0];
+    __pyx_v_region_name = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("get_region_text", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 19, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.ZeroADAPI.get_region_text", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2get_region_text(__pyx_self, __pyx_v_self, __pyx_v_region_name);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2get_region_text(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_region_name) {
+  PyObject *__pyx_v_game_frame = NULL;
+  PyObject *__pyx_v_region_image = NULL;
+  PyObject *__pyx_v_text = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  __Pyx_RefNannySetupContext("get_region_text", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":20
+ * 
+ *     def get_region_text(self, region_name):
+ *         game_frame = self.game.grab_latest_frame()             # <<<<<<<<<<<<<<
+ *         region_image = serpent.cv.extract_region_from_image(
+ *             game_frame.grayscale_frame,
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_2)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  if (__pyx_t_2) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_game_frame = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":21
+ *     def get_region_text(self, region_name):
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(             # <<<<<<<<<<<<<<
+ *             game_frame.grayscale_frame,
+ *             self.game.screen_regions[region_name]
+ */
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_serpent); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_cv); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_extract_region_from_image); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":22
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(
+ *             game_frame.grayscale_frame,             # <<<<<<<<<<<<<<
+ *             self.game.screen_regions[region_name]
+ *         )
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_game_frame, __pyx_n_s_grayscale_frame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":23
+ *         region_image = serpent.cv.extract_region_from_image(
+ *             game_frame.grayscale_frame,
+ *             self.game.screen_regions[region_name]             # <<<<<<<<<<<<<<
+ *         )
+ *         text = serpent.ocr.perform_ocr(region_image)
+ */
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_game); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_screen_regions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = PyObject_GetItem(__pyx_t_5, __pyx_v_region_name); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = NULL;
+  __pyx_t_6 = 0;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+      __pyx_t_6 = 1;
+    }
+  }
+  #if CYTHON_FAST_PYCALL
+  if (PyFunction_Check(__pyx_t_3)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_2, __pyx_t_4};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  } else
+  #endif
+  #if CYTHON_FAST_PYCCALL
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_2, __pyx_t_4};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  } else
+  #endif
+  {
+    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    if (__pyx_t_5) {
+      __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
+    }
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, __pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
+    __pyx_t_2 = 0;
+    __pyx_t_4 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_region_image = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":25
+ *             self.game.screen_regions[region_name]
+ *         )
+ *         text = serpent.ocr.perform_ocr(region_image)             # <<<<<<<<<<<<<<
+ *         return text
+ * 
+ */
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_serpent); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_ocr); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_perform_ocr); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_7)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_7);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  if (!__pyx_t_7) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_region_image); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_region_image};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_region_image};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+    } else
+    #endif
+    {
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 25, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7); __pyx_t_7 = NULL;
+      __Pyx_INCREF(__pyx_v_region_image);
+      __Pyx_GIVEREF(__pyx_v_region_image);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_region_image);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+  }
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_text = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":26
+ *         )
+ *         text = serpent.ocr.perform_ocr(region_image)
+ *         return text             # <<<<<<<<<<<<<<
+ * 
+ *     def my_api_function(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_text);
+  __pyx_r = __pyx_v_text;
+  goto __pyx_L0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":19
+ *         super().__init__(game=game)
+ * 
+ *     def get_region_text(self, region_name):             # <<<<<<<<<<<<<<
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.ZeroADAPI.get_region_text", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_game_frame);
+  __Pyx_XDECREF(__pyx_v_region_image);
+  __Pyx_XDECREF(__pyx_v_text);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":28
+ *         return text
  * 
  *     def my_api_function(self):             # <<<<<<<<<<<<<<
  *         print(self.game)
@@ -1300,39 +1835,39 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3my_api_function(PyObject *__pyx_self, PyObject *__pyx_v_self); /*proto*/
-static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3my_api_function = {"my_api_function", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3my_api_function, METH_O, 0};
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3my_api_function(PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_5my_api_function(PyObject *__pyx_self, PyObject *__pyx_v_self); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_5my_api_function = {"my_api_function", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_5my_api_function, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_5my_api_function(PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("my_api_function (wrapper)", 0);
-  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2my_api_function(__pyx_self, ((PyObject *)__pyx_v_self));
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_4my_api_function(__pyx_self, ((PyObject *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_2my_api_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_4my_api_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("my_api_function", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":19
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":29
  * 
  *     def my_api_function(self):
  *         print(self.game)             # <<<<<<<<<<<<<<
  *         pass
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":18
- *         super().__init__(game=game)
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":28
+ *         return text
  * 
  *     def my_api_function(self):             # <<<<<<<<<<<<<<
  *         print(self.game)
@@ -1352,7 +1887,7 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":25
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":35
  * 
  *         @classmethod
  *         def click_single_player(cls):             # <<<<<<<<<<<<<<
@@ -1388,31 +1923,31 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("click_single_player", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":26
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":36
  *         @classmethod
  *         def click_single_player(cls):
  *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
  * 
  *             frame = api.game.grab_latest_frame()
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_api = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":28
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":38
  *             api = ZeroADAPI.instance
  * 
  *             frame = api.game.grab_latest_frame()             # <<<<<<<<<<<<<<
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -1426,49 +1961,49 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
     }
   }
   if (__pyx_t_1) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_frame = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":29
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":39
  * 
  *             frame = api.game.grab_latest_frame()
  *             preset = api.game.ocr_presets["DEFAULT"]             # <<<<<<<<<<<<<<
  * 
- *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 1, preset)
+ *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 5, preset)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_preset = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":31
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":41
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
- *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 1, preset)             # <<<<<<<<<<<<<<
+ *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 5, preset)             # <<<<<<<<<<<<<<
  * 
  *         @classmethod
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1485,8 +2020,8 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Single_Player, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Single_Player, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -1494,15 +2029,15 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Single_Player, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Single_Player, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 41, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -1515,21 +2050,21 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
     __Pyx_INCREF(__pyx_v_frame);
     __Pyx_GIVEREF(__pyx_v_frame);
     PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_5, __pyx_v_frame);
-    __Pyx_INCREF(__pyx_int_1);
-    __Pyx_GIVEREF(__pyx_int_1);
-    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_1);
+    __Pyx_INCREF(__pyx_int_5);
+    __Pyx_GIVEREF(__pyx_int_5);
+    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_5);
     __Pyx_INCREF(__pyx_v_preset);
     __Pyx_GIVEREF(__pyx_v_preset);
     PyTuple_SET_ITEM(__pyx_t_6, 4+__pyx_t_5, __pyx_v_preset);
     __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":25
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":35
  * 
  *         @classmethod
  *         def click_single_player(cls):             # <<<<<<<<<<<<<<
@@ -1557,7 +2092,7 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_c
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":34
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":44
  * 
  *         @classmethod
  *         def click_matches(cls):             # <<<<<<<<<<<<<<
@@ -1593,31 +2128,31 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("click_matches", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":35
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":45
  *         @classmethod
  *         def click_matches(cls):
  *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
  *             frame = api.game.grab_latest_frame()
  *             preset = api.game.ocr_presets["DEFAULT"]
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_api = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":36
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":46
  *         def click_matches(cls):
  *             api = ZeroADAPI.instance
  *             frame = api.game.grab_latest_frame()             # <<<<<<<<<<<<<<
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -1631,49 +2166,49 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
     }
   }
   if (__pyx_t_1) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_frame = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":37
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":47
  *             api = ZeroADAPI.instance
  *             frame = api.game.grab_latest_frame()
  *             preset = api.game.ocr_presets["DEFAULT"]             # <<<<<<<<<<<<<<
  * 
- *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 1, preset)
+ *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 5, preset)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_preset = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":39
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":49
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
- *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 1, preset)             # <<<<<<<<<<<<<<
+ *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 5, preset)             # <<<<<<<<<<<<<<
  * 
  *         @classmethod
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1690,8 +2225,8 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_n_s_Matches, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_n_s_Matches, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -1699,15 +2234,15 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_n_s_Matches, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_n_s_Matches, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -1720,21 +2255,21 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
     __Pyx_INCREF(__pyx_v_frame);
     __Pyx_GIVEREF(__pyx_v_frame);
     PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_5, __pyx_v_frame);
-    __Pyx_INCREF(__pyx_int_1);
-    __Pyx_GIVEREF(__pyx_int_1);
-    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_1);
+    __Pyx_INCREF(__pyx_int_5);
+    __Pyx_GIVEREF(__pyx_int_5);
+    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_5);
     __Pyx_INCREF(__pyx_v_preset);
     __Pyx_GIVEREF(__pyx_v_preset);
     PyTuple_SET_ITEM(__pyx_t_6, 4+__pyx_t_5, __pyx_v_preset);
     __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":34
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":44
  * 
  *         @classmethod
  *         def click_matches(cls):             # <<<<<<<<<<<<<<
@@ -1762,7 +2297,7 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_2
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":42
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":52
  * 
  *         @classmethod
  *         def click_start_game(cls):             # <<<<<<<<<<<<<<
@@ -1798,31 +2333,31 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("click_start_game", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":43
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":53
  *         @classmethod
  *         def click_start_game(cls):
  *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
  * 
  *             frame = api.game.grab_latest_frame()
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_api = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":45
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":55
  *             api = ZeroADAPI.instance
  * 
  *             frame = api.game.grab_latest_frame()             # <<<<<<<<<<<<<<
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -1836,49 +2371,49 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
     }
   }
   if (__pyx_t_1) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_frame = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":46
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":56
  * 
  *             frame = api.game.grab_latest_frame()
  *             preset = api.game.ocr_presets["DEFAULT"]             # <<<<<<<<<<<<<<
  * 
- *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 1, preset)
+ *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 5, preset)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ocr_presets); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_2 = PyObject_GetItem(__pyx_t_3, __pyx_n_s_DEFAULT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_preset = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":48
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":58
  *             preset = api.game.ocr_presets["DEFAULT"]
  * 
- *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 1, preset)             # <<<<<<<<<<<<<<
+ *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 5, preset)             # <<<<<<<<<<<<<<
  * 
- *     class Game:
+ *     class GameInterface:
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_click_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1895,8 +2430,8 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Start_Game, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Start_Game, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -1904,15 +2439,15 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Start_Game, __pyx_t_4, __pyx_v_frame, __pyx_int_1, __pyx_v_preset};
-    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_kp_s_Start_Game, __pyx_t_4, __pyx_v_frame, __pyx_int_5, __pyx_v_preset};
+    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 58, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -1925,21 +2460,21 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
     __Pyx_INCREF(__pyx_v_frame);
     __Pyx_GIVEREF(__pyx_v_frame);
     PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_5, __pyx_v_frame);
-    __Pyx_INCREF(__pyx_int_1);
-    __Pyx_GIVEREF(__pyx_int_1);
-    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_1);
+    __Pyx_INCREF(__pyx_int_5);
+    __Pyx_GIVEREF(__pyx_int_5);
+    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_int_5);
     __Pyx_INCREF(__pyx_v_preset);
     __Pyx_GIVEREF(__pyx_v_preset);
     PyTuple_SET_ITEM(__pyx_t_6, 4+__pyx_t_5, __pyx_v_preset);
     __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":42
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
  * 
  *         @classmethod
  *         def click_start_game(cls):             # <<<<<<<<<<<<<<
@@ -1967,81 +2502,105 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_4
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":52
- *     class Game:
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":62
+ *     class GameInterface:
  *         @classmethod
- *         def get_region_text(cls, region_name):             # <<<<<<<<<<<<<<
- *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()
+ *         def get_points(cls):             # <<<<<<<<<<<<<<
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_1get_region_text(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_1get_region_text = {"get_region_text", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_1get_region_text, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_1get_region_text(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  CYTHON_UNUSED PyObject *__pyx_v_cls = 0;
-  PyObject *__pyx_v_region_name = 0;
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_1get_points(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_1get_points = {"get_points", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_1get_points, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_1get_points(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("get_region_text (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_cls,&__pyx_n_s_region_name,0};
-    PyObject* values[2] = {0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_cls)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_region_name)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("get_region_text", 1, 2, 2, 1); __PYX_ERR(0, 52, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_region_text") < 0)) __PYX_ERR(0, 52, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-    }
-    __pyx_v_cls = values[0];
-    __pyx_v_region_name = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_region_text", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 52, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.Game.get_region_text", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_get_region_text(__pyx_self, __pyx_v_cls, __pyx_v_region_name);
+  __Pyx_RefNannySetupContext("get_points (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_get_points(__pyx_self, ((PyObject *)__pyx_v_cls));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_get_region_text(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls, PyObject *__pyx_v_region_name) {
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_get_points(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  __Pyx_RefNannySetupContext("get_points", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":63
+ *         @classmethod
+ *         def get_points(cls):
+ *             return ZeroADAPI.instance.game.points             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def update_food_score(cls):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_points); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":62
+ *     class GameInterface:
+ *         @classmethod
+ *         def get_points(cls):             # <<<<<<<<<<<<<<
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.get_points", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":65
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ *         def update_food_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_3update_food_score(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_3update_food_score = {"update_food_score", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_3update_food_score, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_3update_food_score(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("update_food_score (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_2update_food_score(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_2update_food_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
   PyObject *__pyx_v_api = NULL;
-  PyObject *__pyx_v_game_frame = NULL;
-  PyObject *__pyx_v_food_image = NULL;
-  PyObject *__pyx_v_text = NULL;
+  PyObject *__pyx_v_food = NULL;
+  PyObject *__pyx_v_score = NULL;
+  PyObject *__pyx_v_e = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2051,296 +2610,1260 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_get_r
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   PyObject *__pyx_t_7 = NULL;
-  __Pyx_RefNannySetupContext("get_region_text", 0);
+  __Pyx_RefNannySetupContext("update_food_score", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":53
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":66
  *         @classmethod
- *         def get_region_text(cls, region_name):
+ *         def update_food_score(cls):
  *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
- *             game_frame = api.game.grab_latest_frame()
- *             food_image = serpent.cv.extract_region_from_image(
+ *             try:
+ *                 food = api.game.points["food"]
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_api = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":54
- *         def get_region_text(cls, region_name):
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":67
+ *         def update_food_score(cls):
  *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()             # <<<<<<<<<<<<<<
- *             food_image = serpent.cv.extract_region_from_image(
- *                 game_frame.grayscale_frame,
+ *             try:             # <<<<<<<<<<<<<<
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_grab_latest_frame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_1)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_1);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-    }
-  }
-  if (__pyx_t_1) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 54, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 54, __pyx_L1_error)
-  }
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_game_frame = __pyx_t_2;
-  __pyx_t_2 = 0;
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":55
- *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()
- *             food_image = serpent.cv.extract_region_from_image(             # <<<<<<<<<<<<<<
- *                 game_frame.grayscale_frame,
- *                 api.game.screen_regions[region_name]
- */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_serpent); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_cv); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_extract_region_from_image); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":56
- *             game_frame = api.game.grab_latest_frame()
- *             food_image = serpent.cv.extract_region_from_image(
- *                 game_frame.grayscale_frame,             # <<<<<<<<<<<<<<
- *                 api.game.screen_regions[region_name]
- *             )
- */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_game_frame, __pyx_n_s_grayscale_frame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":57
- *             food_image = serpent.cv.extract_region_from_image(
- *                 game_frame.grayscale_frame,
- *                 api.game.screen_regions[region_name]             # <<<<<<<<<<<<<<
- *             )
- *             text = serpent.ocr.perform_ocr(food_image)
- */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 57, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_screen_regions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 57, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyObject_GetItem(__pyx_t_5, __pyx_v_region_name); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 57, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = NULL;
-  __pyx_t_6 = 0;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_5)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_5);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-      __pyx_t_6 = 1;
-    }
-  }
-  #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_1, __pyx_t_4};
-    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  } else
-  #endif
-  #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_1, __pyx_t_4};
-    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  } else
-  #endif
   {
-    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 55, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    if (__pyx_t_5) {
-      __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
-    }
-    __Pyx_GIVEREF(__pyx_t_1);
-    PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, __pyx_t_1);
-    __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
-    __pyx_t_1 = 0;
-    __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_food_image = __pyx_t_2;
-  __pyx_t_2 = 0;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":59
- *                 api.game.screen_regions[region_name]
- *             )
- *             text = serpent.ocr.perform_ocr(food_image)             # <<<<<<<<<<<<<<
- *             return text
- *         @classmethod
- */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_serpent); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_ocr); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_perform_ocr); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_7);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-    }
-  }
-  if (!__pyx_t_7) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_food_image); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-  } else {
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(__pyx_t_3)) {
-      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_food_image};
-      __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_GOTREF(__pyx_t_2);
-    } else
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_food_image};
-      __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_GOTREF(__pyx_t_2);
-    } else
-    #endif
-    {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 59, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7); __pyx_t_7 = NULL;
-      __Pyx_INCREF(__pyx_v_food_image);
-      __Pyx_GIVEREF(__pyx_v_food_image);
-      PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_food_image);
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    }
-  }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_text = __pyx_t_2;
-  __pyx_t_2 = 0;
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":60
- *             )
- *             text = serpent.ocr.perform_ocr(food_image)
- *             return text             # <<<<<<<<<<<<<<
- *         @classmethod
- *         def make_random_move(cls):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(__pyx_v_text);
-  __pyx_r = __pyx_v_text;
-  goto __pyx_L0;
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
- *     class Game:
- *         @classmethod
- *         def get_region_text(cls, region_name):             # <<<<<<<<<<<<<<
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":68
  *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()
+ *             try:
+ *                 food = api.game.points["food"]             # <<<<<<<<<<<<<<
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
+ *                 food["change"] = food["current"] - score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_food); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_food = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":69
+ *             try:
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 food["change"] = food["current"] - score;
+ *                 food["current"] = score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_get_region_text); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_replace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyNumber_Int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_score = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":70
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
+ *                 food["change"] = food["current"] - score;             # <<<<<<<<<<<<<<
+ *                 food["current"] = score;
+ *             except ValueError as e:
+ */
+      __pyx_t_2 = PyObject_GetItem(__pyx_v_food, __pyx_n_s_current); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = PyNumber_Subtract(__pyx_t_2, __pyx_v_score); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_food, __pyx_n_s_change, __pyx_t_1) < 0)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":71
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
+ *                 food["change"] = food["current"] - score;
+ *                 food["current"] = score;             # <<<<<<<<<<<<<<
+ *             except ValueError as e:
+ *                 print(e)
+ */
+      if (unlikely(PyObject_SetItem(__pyx_v_food, __pyx_n_s_current, __pyx_v_score) < 0)) __PYX_ERR(0, 71, __pyx_L3_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":67
+ *         def update_food_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L8_try_end;
+    __pyx_L3_error:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":72
+ *                 food["change"] = food["current"] - score;
+ *                 food["current"] = score;
+ *             except ValueError as e:             # <<<<<<<<<<<<<<
+ *                 print(e)
+ *                 print("Moving on")
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_ValueError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_food_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_7) < 0) __PYX_ERR(0, 72, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_e = __pyx_t_2;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":73
+ *                 food["current"] = score;
+ *             except ValueError as e:
+ *                 print(e)             # <<<<<<<<<<<<<<
+ *                 print("Moving on")
+ *         @classmethod
+ */
+      if (__Pyx_PrintOne(0, __pyx_v_e) < 0) __PYX_ERR(0, 73, __pyx_L5_except_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":74
+ *             except ValueError as e:
+ *                 print(e)
+ *                 print("Moving on")             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def update_wood_score(cls):
+ */
+      if (__Pyx_PrintOne(0, __pyx_kp_s_Moving_on) < 0) __PYX_ERR(0, 74, __pyx_L5_except_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      goto __pyx_L4_exception_handled;
+    }
+    goto __pyx_L5_except_error;
+    __pyx_L5_except_error:;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":67
+ *         def update_food_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))
+ */
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    __pyx_L8_try_end:;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":65
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ *         def update_food_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
  */
 
   /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.Game.get_region_text", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_food_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_api);
-  __Pyx_XDECREF(__pyx_v_game_frame);
-  __Pyx_XDECREF(__pyx_v_food_image);
-  __Pyx_XDECREF(__pyx_v_text);
+  __Pyx_XDECREF(__pyx_v_food);
+  __Pyx_XDECREF(__pyx_v_score);
+  __Pyx_XDECREF(__pyx_v_e);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "SerpentZeroADGamePlugin/files/api/api.pyx":62
- *             return text
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":76
+ *                 print("Moving on")
  *         @classmethod
- *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *         def update_wood_score(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
+ *             try:
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_3make_random_move(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
-static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_3make_random_move = {"make_random_move", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_3make_random_move, METH_O, 0};
-static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_3make_random_move(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_5update_wood_score(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_5update_wood_score = {"update_wood_score", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_5update_wood_score, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_5update_wood_score(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("make_random_move (wrapper)", 0);
-  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_2make_random_move(__pyx_self, ((PyObject *)__pyx_v_cls));
+  __Pyx_RefNannySetupContext("update_wood_score (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_4update_wood_score(__pyx_self, ((PyObject *)__pyx_v_cls));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_2make_random_move(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
-  CYTHON_UNUSED PyObject *__pyx_v_api = NULL;
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_4update_wood_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_v_wood = NULL;
+  PyObject *__pyx_v_score = NULL;
+  PyObject *__pyx_v_e = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  __Pyx_RefNannySetupContext("make_random_move", 0);
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  __Pyx_RefNannySetupContext("update_wood_score", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":63
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":77
  *         @classmethod
- *         def make_random_move(cls):
+ *         def update_wood_score(cls):
  *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ *             try:
+ *                 wood = api.game.points["wood"]
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_api = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":62
- *             return text
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":78
+ *         def update_wood_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":79
+ *             api = ZeroADAPI.instance
+ *             try:
+ *                 wood = api.game.points["wood"]             # <<<<<<<<<<<<<<
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ *                 wood["change"] = wood["current"] - score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_wood); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_wood = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":80
+ *             try:
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 wood["change"] = wood["current"] - score;
+ *                 wood["current"] = score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_get_region_text); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_replace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyNumber_Int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_score = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":81
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ *                 wood["change"] = wood["current"] - score;             # <<<<<<<<<<<<<<
+ *                 wood["current"] = score;
+ *             except ValueError as e:
+ */
+      __pyx_t_2 = PyObject_GetItem(__pyx_v_wood, __pyx_n_s_current); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = PyNumber_Subtract(__pyx_t_2, __pyx_v_score); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_wood, __pyx_n_s_change, __pyx_t_1) < 0)) __PYX_ERR(0, 81, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":82
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ *                 wood["change"] = wood["current"] - score;
+ *                 wood["current"] = score;             # <<<<<<<<<<<<<<
+ *             except ValueError as e:
+ *                 print(e)
+ */
+      if (unlikely(PyObject_SetItem(__pyx_v_wood, __pyx_n_s_current, __pyx_v_score) < 0)) __PYX_ERR(0, 82, __pyx_L3_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":78
+ *         def update_wood_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L8_try_end;
+    __pyx_L3_error:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":83
+ *                 wood["change"] = wood["current"] - score;
+ *                 wood["current"] = score;
+ *             except ValueError as e:             # <<<<<<<<<<<<<<
+ *                 print(e)
+ *                 print("Moving on")
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_ValueError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_wood_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_7) < 0) __PYX_ERR(0, 83, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_e = __pyx_t_2;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":84
+ *                 wood["current"] = score;
+ *             except ValueError as e:
+ *                 print(e)             # <<<<<<<<<<<<<<
+ *                 print("Moving on")
  *         @classmethod
- *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ */
+      if (__Pyx_PrintOne(0, __pyx_v_e) < 0) __PYX_ERR(0, 84, __pyx_L5_except_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":85
+ *             except ValueError as e:
+ *                 print(e)
+ *                 print("Moving on")             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def update_stone_score(cls):
+ */
+      if (__Pyx_PrintOne(0, __pyx_kp_s_Moving_on) < 0) __PYX_ERR(0, 85, __pyx_L5_except_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      goto __pyx_L4_exception_handled;
+    }
+    goto __pyx_L5_except_error;
+    __pyx_L5_except_error:;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":78
+ *         def update_wood_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))
+ */
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    __pyx_L8_try_end:;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":76
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_wood_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_wood_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XDECREF(__pyx_v_wood);
+  __Pyx_XDECREF(__pyx_v_score);
+  __Pyx_XDECREF(__pyx_v_e);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":87
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_stone_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_7update_stone_score(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_7update_stone_score = {"update_stone_score", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_7update_stone_score, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_7update_stone_score(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("update_stone_score (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_6update_stone_score(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_6update_stone_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_v_stone = NULL;
+  PyObject *__pyx_v_score = NULL;
+  PyObject *__pyx_v_e = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  __Pyx_RefNannySetupContext("update_stone_score", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":88
+ *         @classmethod
+ *         def update_stone_score(cls):
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ *             try:
+ *                 stone = api.game.points["stone"]
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":89
+ *         def update_stone_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":90
+ *             api = ZeroADAPI.instance
+ *             try:
+ *                 stone = api.game.points["stone"]             # <<<<<<<<<<<<<<
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ *                 stone["change"] = stone["current"] - score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_stone); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_stone = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":91
+ *             try:
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 stone["change"] = stone["current"] - score;
+ *                 stone["current"] = score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_get_region_text); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_replace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyNumber_Int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_score = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":92
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ *                 stone["change"] = stone["current"] - score;             # <<<<<<<<<<<<<<
+ *                 stone["current"] = score;
+ *             except ValueError as e:
+ */
+      __pyx_t_2 = PyObject_GetItem(__pyx_v_stone, __pyx_n_s_current); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = PyNumber_Subtract(__pyx_t_2, __pyx_v_score); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_stone, __pyx_n_s_change, __pyx_t_1) < 0)) __PYX_ERR(0, 92, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":93
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ *                 stone["change"] = stone["current"] - score;
+ *                 stone["current"] = score;             # <<<<<<<<<<<<<<
+ *             except ValueError as e:
+ *                 print(e)
+ */
+      if (unlikely(PyObject_SetItem(__pyx_v_stone, __pyx_n_s_current, __pyx_v_score) < 0)) __PYX_ERR(0, 93, __pyx_L3_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":89
+ *         def update_stone_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L8_try_end;
+    __pyx_L3_error:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":94
+ *                 stone["change"] = stone["current"] - score;
+ *                 stone["current"] = score;
+ *             except ValueError as e:             # <<<<<<<<<<<<<<
+ *                 print(e)
+ *                 print("Moving on")
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_ValueError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_stone_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_7) < 0) __PYX_ERR(0, 94, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_e = __pyx_t_2;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":95
+ *                 stone["current"] = score;
+ *             except ValueError as e:
+ *                 print(e)             # <<<<<<<<<<<<<<
+ *                 print("Moving on")
+ *         @classmethod
+ */
+      if (__Pyx_PrintOne(0, __pyx_v_e) < 0) __PYX_ERR(0, 95, __pyx_L5_except_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":96
+ *             except ValueError as e:
+ *                 print(e)
+ *                 print("Moving on")             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def update_iron_score(cls):
+ */
+      if (__Pyx_PrintOne(0, __pyx_kp_s_Moving_on) < 0) __PYX_ERR(0, 96, __pyx_L5_except_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      goto __pyx_L4_exception_handled;
+    }
+    goto __pyx_L5_except_error;
+    __pyx_L5_except_error:;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":89
+ *         def update_stone_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))
+ */
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    __pyx_L8_try_end:;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":87
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_stone_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_stone_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XDECREF(__pyx_v_stone);
+  __Pyx_XDECREF(__pyx_v_score);
+  __Pyx_XDECREF(__pyx_v_e);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":98
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_iron_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_9update_iron_score(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_9update_iron_score = {"update_iron_score", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_9update_iron_score, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_9update_iron_score(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("update_iron_score (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_8update_iron_score(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_8update_iron_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_v_iron = NULL;
+  PyObject *__pyx_v_score = NULL;
+  PyObject *__pyx_v_e = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  __Pyx_RefNannySetupContext("update_iron_score", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":99
+ *         @classmethod
+ *         def update_iron_score(cls):
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ *             try:
+ *                 iron = api.game.points["iron"]
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":100
+ *         def update_iron_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":101
+ *             api = ZeroADAPI.instance
+ *             try:
+ *                 iron = api.game.points["iron"]             # <<<<<<<<<<<<<<
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ *                 iron["change"] = iron["current"] - score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_iron); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_iron = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":102
+ *             try:
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 iron["change"] = iron["current"] - score;
+ *                 iron["current"] = score;
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_get_region_text); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_replace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyNumber_Int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_score = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":103
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ *                 iron["change"] = iron["current"] - score;             # <<<<<<<<<<<<<<
+ *                 iron["current"] = score;
+ *             except ValueError as e:
+ */
+      __pyx_t_2 = PyObject_GetItem(__pyx_v_iron, __pyx_n_s_current); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 103, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = PyNumber_Subtract(__pyx_t_2, __pyx_v_score); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 103, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_iron, __pyx_n_s_change, __pyx_t_1) < 0)) __PYX_ERR(0, 103, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":104
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ *                 iron["change"] = iron["current"] - score;
+ *                 iron["current"] = score;             # <<<<<<<<<<<<<<
+ *             except ValueError as e:
+ *                 print(e)
+ */
+      if (unlikely(PyObject_SetItem(__pyx_v_iron, __pyx_n_s_current, __pyx_v_score) < 0)) __PYX_ERR(0, 104, __pyx_L3_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":100
+ *         def update_iron_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L8_try_end;
+    __pyx_L3_error:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":105
+ *                 iron["change"] = iron["current"] - score;
+ *                 iron["current"] = score;
+ *             except ValueError as e:             # <<<<<<<<<<<<<<
+ *                 print(e)
+ *                 print("Moving on")
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_ValueError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_iron_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_7) < 0) __PYX_ERR(0, 105, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_e = __pyx_t_2;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":106
+ *                 iron["current"] = score;
+ *             except ValueError as e:
+ *                 print(e)             # <<<<<<<<<<<<<<
+ *                 print("Moving on")
+ *         @classmethod
+ */
+      if (__Pyx_PrintOne(0, __pyx_v_e) < 0) __PYX_ERR(0, 106, __pyx_L5_except_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":107
+ *             except ValueError as e:
+ *                 print(e)
+ *                 print("Moving on")             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def update_population_score(cls):
+ */
+      if (__Pyx_PrintOne(0, __pyx_kp_s_Moving_on) < 0) __PYX_ERR(0, 107, __pyx_L5_except_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      goto __pyx_L4_exception_handled;
+    }
+    goto __pyx_L5_except_error;
+    __pyx_L5_except_error:;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":100
+ *         def update_iron_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))
+ */
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    __pyx_L8_try_end:;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":98
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_iron_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_iron_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XDECREF(__pyx_v_iron);
+  __Pyx_XDECREF(__pyx_v_score);
+  __Pyx_XDECREF(__pyx_v_e);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":109
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_population_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_11update_population_score(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_11update_population_score = {"update_population_score", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_11update_population_score, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_11update_population_score(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("update_population_score (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_10update_population_score(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_10update_population_score(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_v_population = NULL;
+  PyObject *__pyx_v_score = NULL;
+  PyObject *__pyx_v_e = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_7;
+  __Pyx_RefNannySetupContext("update_population_score", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":110
+ *         @classmethod
+ *         def update_population_score(cls):
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ *             try:
+ *                 population = api.game.points["population"]
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":111
+ *         def update_population_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":112
+ *             api = ZeroADAPI.instance
+ *             try:
+ *                 population = api.game.points["population"]             # <<<<<<<<<<<<<<
+ *                 score = api.get_region_text("POPULATION").split("/")
+ *                 population["change"] = population["current"] - int(score[0])
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_population); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_population = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":113
+ *             try:
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")             # <<<<<<<<<<<<<<
+ *                 population["change"] = population["current"] - int(score[0])
+ *                 population["current"] = int(score[0])
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_get_region_text); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_split); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_v_score = __pyx_t_1;
+      __pyx_t_1 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":114
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")
+ *                 population["change"] = population["current"] - int(score[0])             # <<<<<<<<<<<<<<
+ *                 population["current"] = int(score[0])
+ *                 population["total"] = int(score[1])
+ */
+      __pyx_t_1 = PyObject_GetItem(__pyx_v_population, __pyx_n_s_current); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 114, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_score, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_6 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 114, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_population, __pyx_n_s_change, __pyx_t_2) < 0)) __PYX_ERR(0, 114, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":115
+ *                 score = api.get_region_text("POPULATION").split("/")
+ *                 population["change"] = population["current"] - int(score[0])
+ *                 population["current"] = int(score[0])             # <<<<<<<<<<<<<<
+ *                 population["total"] = int(score[1])
+ *             except ValueError as e:
+ */
+      __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_score, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_6 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 115, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_population, __pyx_n_s_current, __pyx_t_6) < 0)) __PYX_ERR(0, 115, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":116
+ *                 population["change"] = population["current"] - int(score[0])
+ *                 population["current"] = int(score[0])
+ *                 population["total"] = int(score[1])             # <<<<<<<<<<<<<<
+ *             except ValueError as e:
+ *                 print(e)
+ */
+      __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_score, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 116, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_2 = __Pyx_PyNumber_Int(__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(PyObject_SetItem(__pyx_v_population, __pyx_n_s_total, __pyx_t_2) < 0)) __PYX_ERR(0, 116, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":111
+ *         def update_population_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L8_try_end;
+    __pyx_L3_error:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":117
+ *                 population["current"] = int(score[0])
+ *                 population["total"] = int(score[1])
+ *             except ValueError as e:             # <<<<<<<<<<<<<<
+ *                 print(e)
+ *                 print("Moving on")
+ */
+    __pyx_t_7 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_ValueError);
+    if (__pyx_t_7) {
+      __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_population_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_6, &__pyx_t_1) < 0) __PYX_ERR(0, 117, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_6);
+      __pyx_v_e = __pyx_t_6;
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":118
+ *                 population["total"] = int(score[1])
+ *             except ValueError as e:
+ *                 print(e)             # <<<<<<<<<<<<<<
+ *                 print("Moving on")
+ * 
+ */
+      if (__Pyx_PrintOne(0, __pyx_v_e) < 0) __PYX_ERR(0, 118, __pyx_L5_except_error)
+
+      /* "SerpentZeroADGamePlugin/files/api/api.pyx":119
+ *             except ValueError as e:
+ *                 print(e)
+ *                 print("Moving on")             # <<<<<<<<<<<<<<
+ * 
+ *     class GameAction:
+ */
+      if (__Pyx_PrintOne(0, __pyx_kp_s_Moving_on) < 0) __PYX_ERR(0, 119, __pyx_L5_except_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      goto __pyx_L4_exception_handled;
+    }
+    goto __pyx_L5_except_error;
+    __pyx_L5_except_error:;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":111
+ *         def update_population_score(cls):
+ *             api = ZeroADAPI.instance
+ *             try:             # <<<<<<<<<<<<<<
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")
+ */
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_PyThreadState_assign
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    __pyx_L8_try_end:;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":109
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_population_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameInterface.update_population_score", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XDECREF(__pyx_v_population);
+  __Pyx_XDECREF(__pyx_v_score);
+  __Pyx_XDECREF(__pyx_v_e);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":123
+ *     class GameAction:
+ *         @classmethod
+ *         def take_action(cls):             # <<<<<<<<<<<<<<
+ *             # take a game action --> using mouse
+ *             api = ZeroADAPI.instance
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_1take_action(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_1take_action = {"take_action", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_1take_action, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_1take_action(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("take_action (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_take_action(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_take_action(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  CYTHON_UNUSED PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  __Pyx_RefNannySetupContext("take_action", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":125
+ *         def take_action(cls):
+ *             # take a game action --> using mouse
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ * 
+ *         @classmethod
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":123
+ *     class GameAction:
+ *         @classmethod
+ *         def take_action(cls):             # <<<<<<<<<<<<<<
+ *             # take a game action --> using mouse
  *             api = ZeroADAPI.instance
  */
 
@@ -2350,10 +3873,616 @@ static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_2make
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.Game.make_random_move", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameAction.take_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":128
+ * 
+ *         @classmethod
+ *         def move_view(cls):             # <<<<<<<<<<<<<<
+ *             # move the view screen by a set amount
+ *             api = ZeroADAPI.instance
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_3move_view(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_3move_view = {"move_view", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_3move_view, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_3move_view(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("move_view (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_2move_view(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_2move_view(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  CYTHON_UNUSED PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  __Pyx_RefNannySetupContext("move_view", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":130
+ *         def move_view(cls):
+ *             # move the view screen by a set amount
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ * 
+ *         @classmethod
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":128
+ * 
+ *         @classmethod
+ *         def move_view(cls):             # <<<<<<<<<<<<<<
+ *             # move the view screen by a set amount
+ *             api = ZeroADAPI.instance
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameAction.move_view", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentZeroADGamePlugin/files/api/api.pyx":133
+ * 
+ *         @classmethod
+ *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *             # make a random mouse movement
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_5make_random_move(PyObject *__pyx_self, PyObject *__pyx_v_cls); /*proto*/
+static PyMethodDef __pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_5make_random_move = {"make_random_move", (PyCFunction)__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_5make_random_move, METH_O, 0};
+static PyObject *__pyx_pw_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_5make_random_move(PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("make_random_move (wrapper)", 0);
+  __pyx_r = __pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_4make_random_move(__pyx_self, ((PyObject *)__pyx_v_cls));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_4make_random_move(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_cls) {
+  PyObject *__pyx_v_api = NULL;
+  PyObject *__pyx_v_choice = NULL;
+  PyObject *__pyx_v_X = NULL;
+  PyObject *__pyx_v_Y = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  __Pyx_RefNannySetupContext("make_random_move", 0);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":136
+ *             # make a random mouse movement
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ *             api = ZeroADAPI.instance             # <<<<<<<<<<<<<<
+ *             choice = random.randrange(100)
+ * 
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_ZeroADAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_api = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":137
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ *             api = ZeroADAPI.instance
+ *             choice = random.randrange(100)             # <<<<<<<<<<<<<<
+ * 
+ *             if(choice < 20):
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_random); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_randrange); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_choice = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":139
+ *             choice = random.randrange(100)
+ * 
+ *             if(choice < 20):             # <<<<<<<<<<<<<<
+ *                 # right click location
+ *                 print("RIGHT CLICK")
+ */
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_choice, __pyx_int_20, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_3) {
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":141
+ *             if(choice < 20):
+ *                 # right click location
+ *                 print("RIGHT CLICK")             # <<<<<<<<<<<<<<
+ *                 api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)
+ *             elif(choice < 40):
+ */
+    if (__Pyx_PrintOne(0, __pyx_kp_s_RIGHT_CLICK) < 0) __PYX_ERR(0, 141, __pyx_L1_error)
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":142
+ *                 # right click location
+ *                 print("RIGHT CLICK")
+ *                 api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)             # <<<<<<<<<<<<<<
+ *             elif(choice < 40):
+ *                 # left click location
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_click); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_RIGHT); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_button, __pyx_t_5) < 0) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_duration, __pyx_float_0_25) < 0) __PYX_ERR(0, 142, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":139
+ *             choice = random.randrange(100)
+ * 
+ *             if(choice < 20):             # <<<<<<<<<<<<<<
+ *                 # right click location
+ *                 print("RIGHT CLICK")
+ */
+    goto __pyx_L3;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":143
+ *                 print("RIGHT CLICK")
+ *                 api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)
+ *             elif(choice < 40):             # <<<<<<<<<<<<<<
+ *                 # left click location
+ *                 print("LEFT CLICK")
+ */
+  __pyx_t_5 = PyObject_RichCompare(__pyx_v_choice, __pyx_int_40, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__pyx_t_3) {
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":145
+ *             elif(choice < 40):
+ *                 # left click location
+ *                 print("LEFT CLICK")             # <<<<<<<<<<<<<<
+ *                 api.input_controller.click(button=MouseButton.LEFT, duration=0.25)
+ *             elif(choice < 50):
+ */
+    if (__Pyx_PrintOne(0, __pyx_kp_s_LEFT_CLICK) < 0) __PYX_ERR(0, 145, __pyx_L1_error)
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":146
+ *                 # left click location
+ *                 print("LEFT CLICK")
+ *                 api.input_controller.click(button=MouseButton.LEFT, duration=0.25)             # <<<<<<<<<<<<<<
+ *             elif(choice < 50):
+ *                 # click and drag
+ */
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_click); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_button, __pyx_t_4) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_duration, __pyx_float_0_25) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":143
+ *                 print("RIGHT CLICK")
+ *                 api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)
+ *             elif(choice < 40):             # <<<<<<<<<<<<<<
+ *                 # left click location
+ *                 print("LEFT CLICK")
+ */
+    goto __pyx_L3;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":147
+ *                 print("LEFT CLICK")
+ *                 api.input_controller.click(button=MouseButton.LEFT, duration=0.25)
+ *             elif(choice < 50):             # <<<<<<<<<<<<<<
+ *                 # click and drag
+ *                 print("CLICK & DRAG")
+ */
+  __pyx_t_4 = PyObject_RichCompare(__pyx_v_choice, __pyx_int_50, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (__pyx_t_3) {
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":149
+ *             elif(choice < 50):
+ *                 # click and drag
+ *                 print("CLICK & DRAG")             # <<<<<<<<<<<<<<
+ *                 X = random.random()*api.game.window_geometry["width"]
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ */
+    if (__Pyx_PrintOne(0, __pyx_kp_s_CLICK_DRAG) < 0) __PYX_ERR(0, 149, __pyx_L1_error)
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":150
+ *                 # click and drag
+ *                 print("CLICK & DRAG")
+ *                 X = random.random()*api.game.window_geometry["width"]             # <<<<<<<<<<<<<<
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ * 
+ */
+    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    if (__pyx_t_5) {
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 150, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else {
+      __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 150, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_window_geometry); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyObject_GetItem(__pyx_t_5, __pyx_n_s_width); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = PyNumber_Multiply(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_v_X = __pyx_t_5;
+    __pyx_t_5 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":151
+ *                 print("CLICK & DRAG")
+ *                 X = random.random()*api.game.window_geometry["width"]
+ *                 Y = random.random()*api.game.window_geometry["height"]             # <<<<<<<<<<<<<<
+ * 
+ *                 api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)
+ */
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_random); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_4);
+      if (likely(__pyx_t_2)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+        __Pyx_INCREF(__pyx_t_2);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_4, function);
+      }
+    }
+    if (__pyx_t_2) {
+      __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 151, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    } else {
+      __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 151, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_window_geometry); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = PyObject_GetItem(__pyx_t_2, __pyx_n_s_height); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyNumber_Multiply(__pyx_t_5, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_v_Y = __pyx_t_2;
+    __pyx_t_2 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":153
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ * 
+ *                 api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)             # <<<<<<<<<<<<<<
+ *                 api.input_controller.move(x=X, y=Y, duration=0.05)
+ *                 api.input_controller.click_up(button=MouseButton.LEFT, duration=0.25)
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_click_down); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_button, __pyx_t_1) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_duration, __pyx_float_0_25) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":154
+ * 
+ *                 api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)
+ *                 api.input_controller.move(x=X, y=Y, duration=0.05)             # <<<<<<<<<<<<<<
+ *                 api.input_controller.click_up(button=MouseButton.LEFT, duration=0.25)
+ * 
+ */
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_move); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_x, __pyx_v_X) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_y, __pyx_v_Y) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_duration, __pyx_float_0_05) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":155
+ *                 api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)
+ *                 api.input_controller.move(x=X, y=Y, duration=0.05)
+ *                 api.input_controller.click_up(button=MouseButton.LEFT, duration=0.25)             # <<<<<<<<<<<<<<
+ * 
+ *             else:
+ */
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_click_up); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_MouseButton); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_LEFT); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_button, __pyx_t_5) < 0) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_duration, __pyx_float_0_25) < 0) __PYX_ERR(0, 155, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":147
+ *                 print("LEFT CLICK")
+ *                 api.input_controller.click(button=MouseButton.LEFT, duration=0.25)
+ *             elif(choice < 50):             # <<<<<<<<<<<<<<
+ *                 # click and drag
+ *                 print("CLICK & DRAG")
+ */
+    goto __pyx_L3;
+  }
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":159
+ *             else:
+ *                 # move mouse
+ *                 print("MOVE")             # <<<<<<<<<<<<<<
+ *                 X = random.random()*api.game.window_geometry["width"]
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ */
+  /*else*/ {
+    if (__Pyx_PrintOne(0, __pyx_n_s_MOVE) < 0) __PYX_ERR(0, 159, __pyx_L1_error)
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":160
+ *                 # move mouse
+ *                 print("MOVE")
+ *                 X = random.random()*api.game.window_geometry["width"]             # <<<<<<<<<<<<<<
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ * 
+ */
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
+      }
+    }
+    if (__pyx_t_4) {
+      __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 160, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    } else {
+      __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 160, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_window_geometry); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyObject_GetItem(__pyx_t_4, __pyx_n_s_width); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = PyNumber_Multiply(__pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_X = __pyx_t_4;
+    __pyx_t_4 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":161
+ *                 print("MOVE")
+ *                 X = random.random()*api.game.window_geometry["width"]
+ *                 Y = random.random()*api.game.window_geometry["height"]             # <<<<<<<<<<<<<<
+ * 
+ *                 api.input_controller.move(x=X, y=Y, duration=0.25)
+ */
+    __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_random); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
+      __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_5);
+      if (likely(__pyx_t_1)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+        __Pyx_INCREF(__pyx_t_1);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_5, function);
+      }
+    }
+    if (__pyx_t_1) {
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 161, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else {
+      __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 161, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_game); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_window_geometry); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_height); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Multiply(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_v_Y = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentZeroADGamePlugin/files/api/api.pyx":163
+ *                 Y = random.random()*api.game.window_geometry["height"]
+ * 
+ *                 api.input_controller.move(x=X, y=Y, duration=0.25)             # <<<<<<<<<<<<<<
+ */
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_api, __pyx_n_s_input_controller); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_move); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_x, __pyx_v_X) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_y, __pyx_v_Y) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_duration, __pyx_float_0_25) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
+  __pyx_L3:;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":133
+ * 
+ *         @classmethod
+ *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *             # make a random mouse movement
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_AddTraceback("SerpentZeroADGamePlugin.files.api.api.GameAction.make_random_move", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_api);
+  __Pyx_XDECREF(__pyx_v_choice);
+  __Pyx_XDECREF(__pyx_v_X);
+  __Pyx_XDECREF(__pyx_v_Y);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -2382,53 +4511,92 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_kp_s_CLICK_DRAG, __pyx_k_CLICK_DRAG, sizeof(__pyx_k_CLICK_DRAG), 0, 0, 1, 0},
   {&__pyx_n_s_DEFAULT, __pyx_k_DEFAULT, sizeof(__pyx_k_DEFAULT), 0, 0, 1, 1},
-  {&__pyx_n_s_Game, __pyx_k_Game, sizeof(__pyx_k_Game), 0, 0, 1, 1},
+  {&__pyx_n_s_FOOD, __pyx_k_FOOD, sizeof(__pyx_k_FOOD), 0, 0, 1, 1},
   {&__pyx_n_s_GameAPI, __pyx_k_GameAPI, sizeof(__pyx_k_GameAPI), 0, 0, 1, 1},
+  {&__pyx_n_s_GameAction, __pyx_k_GameAction, sizeof(__pyx_k_GameAction), 0, 0, 1, 1},
+  {&__pyx_n_s_GameInterface, __pyx_k_GameInterface, sizeof(__pyx_k_GameInterface), 0, 0, 1, 1},
+  {&__pyx_n_s_IRON, __pyx_k_IRON, sizeof(__pyx_k_IRON), 0, 0, 1, 1},
   {&__pyx_n_s_LEFT, __pyx_k_LEFT, sizeof(__pyx_k_LEFT), 0, 0, 1, 1},
+  {&__pyx_kp_s_LEFT_CLICK, __pyx_k_LEFT_CLICK, sizeof(__pyx_k_LEFT_CLICK), 0, 0, 1, 0},
+  {&__pyx_n_s_MOVE, __pyx_k_MOVE, sizeof(__pyx_k_MOVE), 0, 0, 1, 1},
   {&__pyx_n_s_MainMenu, __pyx_k_MainMenu, sizeof(__pyx_k_MainMenu), 0, 0, 1, 1},
   {&__pyx_n_s_Matches, __pyx_k_Matches, sizeof(__pyx_k_Matches), 0, 0, 1, 1},
   {&__pyx_n_s_MouseButton, __pyx_k_MouseButton, sizeof(__pyx_k_MouseButton), 0, 0, 1, 1},
+  {&__pyx_kp_s_Moving_on, __pyx_k_Moving_on, sizeof(__pyx_k_Moving_on), 0, 0, 1, 0},
+  {&__pyx_n_s_POPULATION, __pyx_k_POPULATION, sizeof(__pyx_k_POPULATION), 0, 0, 1, 1},
+  {&__pyx_n_s_RIGHT, __pyx_k_RIGHT, sizeof(__pyx_k_RIGHT), 0, 0, 1, 1},
+  {&__pyx_kp_s_RIGHT_CLICK, __pyx_k_RIGHT_CLICK, sizeof(__pyx_k_RIGHT_CLICK), 0, 0, 1, 0},
+  {&__pyx_n_s_STONE, __pyx_k_STONE, sizeof(__pyx_k_STONE), 0, 0, 1, 1},
   {&__pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_k_SerpentZeroADGamePlugin_files_ap, sizeof(__pyx_k_SerpentZeroADGamePlugin_files_ap), 0, 0, 1, 1},
   {&__pyx_kp_s_Single_Player, __pyx_k_Single_Player, sizeof(__pyx_k_Single_Player), 0, 0, 1, 0},
   {&__pyx_n_s_Sprite, __pyx_k_Sprite, sizeof(__pyx_k_Sprite), 0, 0, 1, 1},
   {&__pyx_n_s_SpriteLocator, __pyx_k_SpriteLocator, sizeof(__pyx_k_SpriteLocator), 0, 0, 1, 1},
   {&__pyx_kp_s_Start_Game, __pyx_k_Start_Game, sizeof(__pyx_k_Start_Game), 0, 0, 1, 0},
+  {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
+  {&__pyx_n_s_WOOD, __pyx_k_WOOD, sizeof(__pyx_k_WOOD), 0, 0, 1, 1},
+  {&__pyx_n_s_X, __pyx_k_X, sizeof(__pyx_k_X), 0, 0, 1, 1},
+  {&__pyx_n_s_Y, __pyx_k_Y, sizeof(__pyx_k_Y), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI, __pyx_k_ZeroADAPI, sizeof(__pyx_k_ZeroADAPI), 0, 0, 1, 1},
-  {&__pyx_n_s_ZeroADAPI_Game, __pyx_k_ZeroADAPI_Game, sizeof(__pyx_k_ZeroADAPI_Game), 0, 0, 1, 1},
-  {&__pyx_n_s_ZeroADAPI_Game_get_region_text, __pyx_k_ZeroADAPI_Game_get_region_text, sizeof(__pyx_k_ZeroADAPI_Game_get_region_text), 0, 0, 1, 1},
-  {&__pyx_n_s_ZeroADAPI_Game_make_random_move, __pyx_k_ZeroADAPI_Game_make_random_move, sizeof(__pyx_k_ZeroADAPI_Game_make_random_move), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameAction, __pyx_k_ZeroADAPI_GameAction, sizeof(__pyx_k_ZeroADAPI_GameAction), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameAction_make_random, __pyx_k_ZeroADAPI_GameAction_make_random, sizeof(__pyx_k_ZeroADAPI_GameAction_make_random), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameAction_move_view, __pyx_k_ZeroADAPI_GameAction_move_view, sizeof(__pyx_k_ZeroADAPI_GameAction_move_view), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameAction_take_action, __pyx_k_ZeroADAPI_GameAction_take_action, sizeof(__pyx_k_ZeroADAPI_GameAction_take_action), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface, __pyx_k_ZeroADAPI_GameInterface, sizeof(__pyx_k_ZeroADAPI_GameInterface), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_get_poin, __pyx_k_ZeroADAPI_GameInterface_get_poin, sizeof(__pyx_k_ZeroADAPI_GameInterface_get_poin), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_update_f, __pyx_k_ZeroADAPI_GameInterface_update_f, sizeof(__pyx_k_ZeroADAPI_GameInterface_update_f), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_update_i, __pyx_k_ZeroADAPI_GameInterface_update_i, sizeof(__pyx_k_ZeroADAPI_GameInterface_update_i), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_update_p, __pyx_k_ZeroADAPI_GameInterface_update_p, sizeof(__pyx_k_ZeroADAPI_GameInterface_update_p), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_update_s, __pyx_k_ZeroADAPI_GameInterface_update_s, sizeof(__pyx_k_ZeroADAPI_GameInterface_update_s), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_GameInterface_update_w, __pyx_k_ZeroADAPI_GameInterface_update_w, sizeof(__pyx_k_ZeroADAPI_GameInterface_update_w), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI_MainMenu, __pyx_k_ZeroADAPI_MainMenu, sizeof(__pyx_k_ZeroADAPI_MainMenu), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI_MainMenu_click_matches, __pyx_k_ZeroADAPI_MainMenu_click_matches, sizeof(__pyx_k_ZeroADAPI_MainMenu_click_matches), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI_MainMenu_click_single, __pyx_k_ZeroADAPI_MainMenu_click_single, sizeof(__pyx_k_ZeroADAPI_MainMenu_click_single), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI_MainMenu_click_start_g, __pyx_k_ZeroADAPI_MainMenu_click_start_g, sizeof(__pyx_k_ZeroADAPI_MainMenu_click_start_g), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI___init, __pyx_k_ZeroADAPI___init, sizeof(__pyx_k_ZeroADAPI___init), 0, 0, 1, 1},
+  {&__pyx_n_s_ZeroADAPI_get_region_text, __pyx_k_ZeroADAPI_get_region_text, sizeof(__pyx_k_ZeroADAPI_get_region_text), 0, 0, 1, 1},
   {&__pyx_n_s_ZeroADAPI_my_api_function, __pyx_k_ZeroADAPI_my_api_function, sizeof(__pyx_k_ZeroADAPI_my_api_function), 0, 0, 1, 1},
+  {&__pyx_kp_s__12, __pyx_k__12, sizeof(__pyx_k__12), 0, 0, 1, 0},
+  {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
+  {&__pyx_kp_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 0},
   {&__pyx_n_s_abspath, __pyx_k_abspath, sizeof(__pyx_k_abspath), 0, 0, 1, 1},
   {&__pyx_n_s_api, __pyx_k_api, sizeof(__pyx_k_api), 0, 0, 1, 1},
   {&__pyx_kp_s_api_pyx, __pyx_k_api_pyx, sizeof(__pyx_k_api_pyx), 0, 0, 1, 0},
+  {&__pyx_n_s_button, __pyx_k_button, sizeof(__pyx_k_button), 0, 0, 1, 1},
+  {&__pyx_n_s_change, __pyx_k_change, sizeof(__pyx_k_change), 0, 0, 1, 1},
+  {&__pyx_n_s_choice, __pyx_k_choice, sizeof(__pyx_k_choice), 0, 0, 1, 1},
+  {&__pyx_n_s_click, __pyx_k_click, sizeof(__pyx_k_click), 0, 0, 1, 1},
+  {&__pyx_n_s_click_down, __pyx_k_click_down, sizeof(__pyx_k_click_down), 0, 0, 1, 1},
   {&__pyx_n_s_click_matches, __pyx_k_click_matches, sizeof(__pyx_k_click_matches), 0, 0, 1, 1},
   {&__pyx_n_s_click_single_player, __pyx_k_click_single_player, sizeof(__pyx_k_click_single_player), 0, 0, 1, 1},
   {&__pyx_n_s_click_start_game, __pyx_k_click_start_game, sizeof(__pyx_k_click_start_game), 0, 0, 1, 1},
   {&__pyx_n_s_click_string, __pyx_k_click_string, sizeof(__pyx_k_click_string), 0, 0, 1, 1},
+  {&__pyx_n_s_click_up, __pyx_k_click_up, sizeof(__pyx_k_click_up), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_cls, __pyx_k_cls, sizeof(__pyx_k_cls), 0, 0, 1, 1},
+  {&__pyx_n_s_current, __pyx_k_current, sizeof(__pyx_k_current), 0, 0, 1, 1},
   {&__pyx_n_s_cv, __pyx_k_cv, sizeof(__pyx_k_cv), 0, 0, 1, 1},
   {&__pyx_n_s_doc, __pyx_k_doc, sizeof(__pyx_k_doc), 0, 0, 1, 1},
+  {&__pyx_n_s_duration, __pyx_k_duration, sizeof(__pyx_k_duration), 0, 0, 1, 1},
+  {&__pyx_n_s_e, __pyx_k_e, sizeof(__pyx_k_e), 0, 0, 1, 1},
   {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
   {&__pyx_n_s_extract_region_from_image, __pyx_k_extract_region_from_image, sizeof(__pyx_k_extract_region_from_image), 0, 0, 1, 1},
   {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
-  {&__pyx_n_s_food_image, __pyx_k_food_image, sizeof(__pyx_k_food_image), 0, 0, 1, 1},
+  {&__pyx_n_s_food, __pyx_k_food, sizeof(__pyx_k_food), 0, 0, 1, 1},
   {&__pyx_n_s_frame, __pyx_k_frame, sizeof(__pyx_k_frame), 0, 0, 1, 1},
   {&__pyx_n_s_game, __pyx_k_game, sizeof(__pyx_k_game), 0, 0, 1, 1},
   {&__pyx_n_s_game_frame, __pyx_k_game_frame, sizeof(__pyx_k_game_frame), 0, 0, 1, 1},
+  {&__pyx_n_s_get_points, __pyx_k_get_points, sizeof(__pyx_k_get_points), 0, 0, 1, 1},
   {&__pyx_n_s_get_region_text, __pyx_k_get_region_text, sizeof(__pyx_k_get_region_text), 0, 0, 1, 1},
   {&__pyx_n_s_grab_latest_frame, __pyx_k_grab_latest_frame, sizeof(__pyx_k_grab_latest_frame), 0, 0, 1, 1},
   {&__pyx_n_s_grayscale_frame, __pyx_k_grayscale_frame, sizeof(__pyx_k_grayscale_frame), 0, 0, 1, 1},
+  {&__pyx_n_s_height, __pyx_k_height, sizeof(__pyx_k_height), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
   {&__pyx_n_s_input_controller, __pyx_k_input_controller, sizeof(__pyx_k_input_controller), 0, 0, 1, 1},
   {&__pyx_n_s_instance, __pyx_k_instance, sizeof(__pyx_k_instance), 0, 0, 1, 1},
+  {&__pyx_n_s_iron, __pyx_k_iron, sizeof(__pyx_k_iron), 0, 0, 1, 1},
   {&__pyx_n_s_isfile, __pyx_k_isfile, sizeof(__pyx_k_isfile), 0, 0, 1, 1},
   {&__pyx_n_s_join, __pyx_k_join, sizeof(__pyx_k_join), 0, 0, 1, 1},
   {&__pyx_n_s_listdir, __pyx_k_listdir, sizeof(__pyx_k_listdir), 0, 0, 1, 1},
@@ -2436,6 +4604,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_make_random_move, __pyx_k_make_random_move, sizeof(__pyx_k_make_random_move), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
   {&__pyx_n_s_module, __pyx_k_module, sizeof(__pyx_k_module), 0, 0, 1, 1},
+  {&__pyx_n_s_move, __pyx_k_move, sizeof(__pyx_k_move), 0, 0, 1, 1},
+  {&__pyx_n_s_move_view, __pyx_k_move_view, sizeof(__pyx_k_move_view), 0, 0, 1, 1},
   {&__pyx_n_s_my_api_function, __pyx_k_my_api_function, sizeof(__pyx_k_my_api_function), 0, 0, 1, 1},
   {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
@@ -2444,11 +4614,18 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_os, __pyx_k_os, sizeof(__pyx_k_os), 0, 0, 1, 1},
   {&__pyx_n_s_os_path, __pyx_k_os_path, sizeof(__pyx_k_os_path), 0, 0, 1, 1},
   {&__pyx_n_s_perform_ocr, __pyx_k_perform_ocr, sizeof(__pyx_k_perform_ocr), 0, 0, 1, 1},
+  {&__pyx_n_s_points, __pyx_k_points, sizeof(__pyx_k_points), 0, 0, 1, 1},
+  {&__pyx_n_s_population, __pyx_k_population, sizeof(__pyx_k_population), 0, 0, 1, 1},
   {&__pyx_n_s_prepare, __pyx_k_prepare, sizeof(__pyx_k_prepare), 0, 0, 1, 1},
   {&__pyx_n_s_preset, __pyx_k_preset, sizeof(__pyx_k_preset), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_qualname, __pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 0, 1, 1},
+  {&__pyx_n_s_random, __pyx_k_random, sizeof(__pyx_k_random), 0, 0, 1, 1},
+  {&__pyx_n_s_randrange, __pyx_k_randrange, sizeof(__pyx_k_randrange), 0, 0, 1, 1},
+  {&__pyx_n_s_region_image, __pyx_k_region_image, sizeof(__pyx_k_region_image), 0, 0, 1, 1},
   {&__pyx_n_s_region_name, __pyx_k_region_name, sizeof(__pyx_k_region_name), 0, 0, 1, 1},
+  {&__pyx_n_s_replace, __pyx_k_replace, sizeof(__pyx_k_replace), 0, 0, 1, 1},
+  {&__pyx_n_s_score, __pyx_k_score, sizeof(__pyx_k_score), 0, 0, 1, 1},
   {&__pyx_n_s_screen_regions, __pyx_k_screen_regions, sizeof(__pyx_k_screen_regions), 0, 0, 1, 1},
   {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_serpent, __pyx_k_serpent, sizeof(__pyx_k_serpent), 0, 0, 1, 1},
@@ -2460,13 +4637,28 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_serpent_sprite_locator, __pyx_k_serpent_sprite_locator, sizeof(__pyx_k_serpent_sprite_locator), 0, 0, 1, 1},
   {&__pyx_n_s_skimage, __pyx_k_skimage, sizeof(__pyx_k_skimage), 0, 0, 1, 1},
   {&__pyx_n_s_skimage_io, __pyx_k_skimage_io, sizeof(__pyx_k_skimage_io), 0, 0, 1, 1},
+  {&__pyx_n_s_split, __pyx_k_split, sizeof(__pyx_k_split), 0, 0, 1, 1},
+  {&__pyx_n_s_stone, __pyx_k_stone, sizeof(__pyx_k_stone), 0, 0, 1, 1},
   {&__pyx_n_s_super, __pyx_k_super, sizeof(__pyx_k_super), 0, 0, 1, 1},
+  {&__pyx_n_s_take_action, __pyx_k_take_action, sizeof(__pyx_k_take_action), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_text, __pyx_k_text, sizeof(__pyx_k_text), 0, 0, 1, 1},
+  {&__pyx_n_s_total, __pyx_k_total, sizeof(__pyx_k_total), 0, 0, 1, 1},
+  {&__pyx_n_s_update_food_score, __pyx_k_update_food_score, sizeof(__pyx_k_update_food_score), 0, 0, 1, 1},
+  {&__pyx_n_s_update_iron_score, __pyx_k_update_iron_score, sizeof(__pyx_k_update_iron_score), 0, 0, 1, 1},
+  {&__pyx_n_s_update_population_score, __pyx_k_update_population_score, sizeof(__pyx_k_update_population_score), 0, 0, 1, 1},
+  {&__pyx_n_s_update_stone_score, __pyx_k_update_stone_score, sizeof(__pyx_k_update_stone_score), 0, 0, 1, 1},
+  {&__pyx_n_s_update_wood_score, __pyx_k_update_wood_score, sizeof(__pyx_k_update_wood_score), 0, 0, 1, 1},
+  {&__pyx_n_s_width, __pyx_k_width, sizeof(__pyx_k_width), 0, 0, 1, 1},
+  {&__pyx_n_s_window_geometry, __pyx_k_window_geometry, sizeof(__pyx_k_window_geometry), 0, 0, 1, 1},
+  {&__pyx_n_s_wood, __pyx_k_wood, sizeof(__pyx_k_wood), 0, 0, 1, 1},
+  {&__pyx_n_s_x, __pyx_k_x, sizeof(__pyx_k_x), 0, 0, 1, 1},
+  {&__pyx_n_s_y, __pyx_k_y, sizeof(__pyx_k_y), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 72, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2476,91 +4668,269 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":15
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":69
+ *             try:
+ *                 food = api.game.points["food"]
+ *                 score = int(api.get_region_text("FOOD").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 food["change"] = food["current"] - score;
+ *                 food["current"] = score;
+ */
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_n_s_FOOD); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple_);
+  __Pyx_GIVEREF(__pyx_tuple_);
+  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_kp_s__2, __pyx_kp_s__3); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":80
+ *             try:
+ *                 wood = api.game.points["wood"]
+ *                 score = int(api.get_region_text("WOOD").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 wood["change"] = wood["current"] - score;
+ *                 wood["current"] = score;
+ */
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_n_s_WOOD); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_kp_s__2, __pyx_kp_s__3); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":91
+ *             try:
+ *                 stone = api.game.points["stone"]
+ *                 score = int(api.get_region_text("STONE").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 stone["change"] = stone["current"] - score;
+ *                 stone["current"] = score;
+ */
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_n_s_STONE); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__8 = PyTuple_Pack(2, __pyx_kp_s__2, __pyx_kp_s__3); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":102
+ *             try:
+ *                 iron = api.game.points["iron"]
+ *                 score = int(api.get_region_text("IRON").replace(" ", ""))             # <<<<<<<<<<<<<<
+ *                 iron["change"] = iron["current"] - score;
+ *                 iron["current"] = score;
+ */
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_n_s_IRON); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 102, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_tuple__10 = PyTuple_Pack(2, __pyx_kp_s__2, __pyx_kp_s__3); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 102, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":113
+ *             try:
+ *                 population = api.game.points["population"]
+ *                 score = api.get_region_text("POPULATION").split("/")             # <<<<<<<<<<<<<<
+ *                 population["change"] = population["current"] - int(score[0])
+ *                 population["current"] = int(score[0])
+ */
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_n_s_POPULATION); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s__12); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":137
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ *             api = ZeroADAPI.instance
+ *             choice = random.randrange(100)             # <<<<<<<<<<<<<<
+ * 
+ *             if(choice < 20):
+ */
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_int_100); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":16
  * class ZeroADAPI(GameAPI):
  * 
  *     def __init__(self, game=None):             # <<<<<<<<<<<<<<
  *         super().__init__(game=game)
  * 
  */
-  __pyx_tuple_ = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_game); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple_);
-  __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_init, 15, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __pyx_tuple__3 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_game); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_init, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_tuple__17 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":18
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":19
  *         super().__init__(game=game)
+ * 
+ *     def get_region_text(self, region_name):             # <<<<<<<<<<<<<<
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(
+ */
+  __pyx_tuple__18 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_region_name, __pyx_n_s_game_frame, __pyx_n_s_region_image, __pyx_n_s_text); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(2, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_get_region_text, 19, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 19, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":28
+ *         return text
  * 
  *     def my_api_function(self):             # <<<<<<<<<<<<<<
  *         print(self.game)
  *         pass
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 18, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_my_api_function, 18, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_codeobj__21 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_my_api_function, 28, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 28, __pyx_L1_error)
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":25
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":35
  * 
  *         @classmethod
  *         def click_single_player(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 25, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_single_player, 25, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_single_player, 35, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(0, 35, __pyx_L1_error)
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":34
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":44
  * 
  *         @classmethod
  *         def click_matches(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  *             frame = api.game.grab_latest_frame()
  */
-  __pyx_tuple__8 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 34, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_matches, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_tuple__24 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
+  __pyx_codeobj__25 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_matches, 44, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__25)) __PYX_ERR(0, 44, __pyx_L1_error)
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":42
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
  * 
  *         @classmethod
  *         def click_start_game(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  * 
  */
-  __pyx_tuple__10 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 42, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
-  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_start_game, 42, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(0, 42, __pyx_L1_error)
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
- *     class Game:
- *         @classmethod
- *         def get_region_text(cls, region_name):             # <<<<<<<<<<<<<<
- *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()
- */
-  __pyx_tuple__12 = PyTuple_Pack(6, __pyx_n_s_cls, __pyx_n_s_region_name, __pyx_n_s_api, __pyx_n_s_game_frame, __pyx_n_s_food_image, __pyx_n_s_text); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__12);
-  __Pyx_GIVEREF(__pyx_tuple__12);
-  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(2, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_get_region_text, 52, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __pyx_tuple__26 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_frame, __pyx_n_s_preset); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
+  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_click_start_game, 52, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 52, __pyx_L1_error)
 
   /* "SerpentZeroADGamePlugin/files/api/api.pyx":62
- *             return text
+ *     class GameInterface:
  *         @classmethod
- *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *         def get_points(cls):             # <<<<<<<<<<<<<<
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ */
+  __pyx_tuple__28 = PyTuple_Pack(1, __pyx_n_s_cls); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
+  __Pyx_GIVEREF(__pyx_tuple__28);
+  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_get_points, 62, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(0, 62, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":65
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ *         def update_food_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_tuple__30 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_food, __pyx_n_s_score, __pyx_n_s_e); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__30);
+  __Pyx_GIVEREF(__pyx_tuple__30);
+  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_update_food_score, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 65, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":76
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_wood_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_tuple__32 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_wood, __pyx_n_s_score, __pyx_n_s_e); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__32);
+  __Pyx_GIVEREF(__pyx_tuple__32);
+  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_update_wood_score, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 76, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":87
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_stone_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_tuple__34 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_stone, __pyx_n_s_score, __pyx_n_s_e); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
+  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_update_stone_score, 87, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 87, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":98
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_iron_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_tuple__36 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_iron, __pyx_n_s_score, __pyx_n_s_e); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__36);
+  __Pyx_GIVEREF(__pyx_tuple__36);
+  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_update_iron_score, 98, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) __PYX_ERR(0, 98, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":109
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_population_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_tuple__38 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_population, __pyx_n_s_score, __pyx_n_s_e); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 109, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__38);
+  __Pyx_GIVEREF(__pyx_tuple__38);
+  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_update_population_score, 109, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 109, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":123
+ *     class GameAction:
+ *         @classmethod
+ *         def take_action(cls):             # <<<<<<<<<<<<<<
+ *             # take a game action --> using mouse
  *             api = ZeroADAPI.instance
  */
-  __pyx_tuple__14 = PyTuple_Pack(2, __pyx_n_s_cls, __pyx_n_s_api); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_make_random_move, 62, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_cls, __pyx_n_s_api); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__40);
+  __Pyx_GIVEREF(__pyx_tuple__40);
+  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_take_action, 123, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(0, 123, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":128
+ * 
+ *         @classmethod
+ *         def move_view(cls):             # <<<<<<<<<<<<<<
+ *             # move the view screen by a set amount
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_tuple__42 = PyTuple_Pack(2, __pyx_n_s_cls, __pyx_n_s_api); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__42);
+  __Pyx_GIVEREF(__pyx_tuple__42);
+  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_move_view, 128, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 128, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":133
+ * 
+ *         @classmethod
+ *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *             # make a random mouse movement
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ */
+  __pyx_tuple__44 = PyTuple_Pack(5, __pyx_n_s_cls, __pyx_n_s_api, __pyx_n_s_choice, __pyx_n_s_X, __pyx_n_s_Y); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__44);
+  __Pyx_GIVEREF(__pyx_tuple__44);
+  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_api_pyx, __pyx_n_s_make_random_move, 133, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2570,7 +4940,13 @@ static int __Pyx_InitCachedConstants(void) {
 
 static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_float_0_05 = PyFloat_FromDouble(0.05); if (unlikely(!__pyx_float_0_05)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_float_0_25 = PyFloat_FromDouble(0.25); if (unlikely(!__pyx_float_0_25)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_5 = PyInt_FromLong(5); if (unlikely(!__pyx_int_5)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_20 = PyInt_FromLong(20); if (unlikely(!__pyx_int_20)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_40 = PyInt_FromLong(40); if (unlikely(!__pyx_int_40)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_50 = PyInt_FromLong(50); if (unlikely(!__pyx_int_50)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_100 = PyInt_FromLong(100); if (unlikely(!__pyx_int_100)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2773,7 +5149,7 @@ PyMODINIT_FUNC PyInit_api(void)
  * import serpent.cv
  * import serpent.ocr             # <<<<<<<<<<<<<<
  * import numpy as np
- * import skimage.io
+ * import random
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_serpent_ocr, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -2784,8 +5160,8 @@ PyMODINIT_FUNC PyInit_api(void)
  * import serpent.cv
  * import serpent.ocr
  * import numpy as np             # <<<<<<<<<<<<<<
+ * import random
  * import skimage.io
- * from os import listdir
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -2795,44 +5171,56 @@ PyMODINIT_FUNC PyInit_api(void)
   /* "SerpentZeroADGamePlugin/files/api/api.pyx":8
  * import serpent.ocr
  * import numpy as np
- * import skimage.io             # <<<<<<<<<<<<<<
+ * import random             # <<<<<<<<<<<<<<
+ * import skimage.io
  * from os import listdir
- * from os.path import isfile, join, abspath
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_skimage_io, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_random, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_skimage, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_random, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "SerpentZeroADGamePlugin/files/api/api.pyx":9
  * import numpy as np
+ * import random
+ * import skimage.io             # <<<<<<<<<<<<<<
+ * from os import listdir
+ * from os.path import isfile, join, abspath
+ */
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_skimage_io, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_skimage, __pyx_t_1) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":10
+ * import random
  * import skimage.io
  * from os import listdir             # <<<<<<<<<<<<<<
  * from os.path import isfile, join, abspath
  * 
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_listdir);
   __Pyx_GIVEREF(__pyx_n_s_listdir);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_listdir);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_os, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_os, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_listdir); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_listdir); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_listdir, __pyx_t_1) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_listdir, __pyx_t_1) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":10
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":11
  * import skimage.io
  * from os import listdir
  * from os.path import isfile, join, abspath             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_2 = PyList_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_s_isfile);
   __Pyx_GIVEREF(__pyx_n_s_isfile);
@@ -2843,244 +5231,441 @@ PyMODINIT_FUNC PyInit_api(void)
   __Pyx_INCREF(__pyx_n_s_abspath);
   __Pyx_GIVEREF(__pyx_n_s_abspath);
   PyList_SET_ITEM(__pyx_t_2, 2, __pyx_n_s_abspath);
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_os_path, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_os_path, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_isfile); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_isfile); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_isfile, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_isfile, __pyx_t_2) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_join); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_join); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_join, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_join, __pyx_t_2) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_abspath); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_abspath); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_abspath, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_abspath, __pyx_t_2) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":13
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":14
  * 
  * 
  * class ZeroADAPI(GameAPI):             # <<<<<<<<<<<<<<
  * 
  *     def __init__(self, game=None):
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_GameAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_GameAPI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_t_2, __pyx_n_s_ZeroADAPI, __pyx_n_s_ZeroADAPI, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_t_2, __pyx_n_s_ZeroADAPI, __pyx_n_s_ZeroADAPI, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":15
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":16
  * class ZeroADAPI(GameAPI):
  * 
  *     def __init__(self, game=None):             # <<<<<<<<<<<<<<
  *         super().__init__(game=game)
  * 
  */
-  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_1__init__, 0, __pyx_n_s_ZeroADAPI___init, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_1__init__, 0, __pyx_n_s_ZeroADAPI___init, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__16)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_t_5);
   PyList_Append(__pyx_t_4, __pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_5);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_5, __pyx_tuple__3);
-  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_init, __pyx_t_5) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_5, __pyx_tuple__17);
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_init, __pyx_t_5) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":18
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":19
  *         super().__init__(game=game)
+ * 
+ *     def get_region_text(self, region_name):             # <<<<<<<<<<<<<<
+ *         game_frame = self.game.grab_latest_frame()
+ *         region_image = serpent.cv.extract_region_from_image(
+ */
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3get_region_text, 0, __pyx_n_s_ZeroADAPI_get_region_text, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_get_region_text, __pyx_t_5) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":28
+ *         return text
  * 
  *     def my_api_function(self):             # <<<<<<<<<<<<<<
  *         print(self.game)
  *         pass
  */
-  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_3my_api_function, 0, __pyx_n_s_ZeroADAPI_my_api_function, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_9ZeroADAPI_5my_api_function, 0, __pyx_n_s_ZeroADAPI_my_api_function, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__21)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_my_api_function, __pyx_t_5) < 0) __PYX_ERR(0, 18, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_my_api_function, __pyx_t_5) < 0) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":22
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":32
  *         pass
  * 
  *     class MainMenu:             # <<<<<<<<<<<<<<
  * 
  *         @classmethod
  */
-  __pyx_t_5 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_MainMenu, __pyx_n_s_ZeroADAPI_MainMenu, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_MainMenu, __pyx_n_s_ZeroADAPI_MainMenu, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":25
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":35
  * 
  *         @classmethod
  *         def click_single_player(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  * 
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_1click_single_player, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_single, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__7)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_1click_single_player, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_single, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":24
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":34
  *     class MainMenu:
  * 
  *         @classmethod             # <<<<<<<<<<<<<<
  *         def click_single_player(cls):
  *             api = ZeroADAPI.instance
  */
-  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_single_player, __pyx_t_7) < 0) __PYX_ERR(0, 25, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_single_player, __pyx_t_7) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":34
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":44
  * 
  *         @classmethod
  *         def click_matches(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  *             frame = api.game.grab_latest_frame()
  */
-  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_3click_matches, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_matches, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_3click_matches, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_matches, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__25)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":33
- *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 1, preset)
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":43
+ *             api.input_controller.click_string("Single Player", MouseButton.LEFT, frame, 5, preset)
  * 
  *         @classmethod             # <<<<<<<<<<<<<<
  *         def click_matches(cls):
  *             api = ZeroADAPI.instance
  */
-  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_matches, __pyx_t_6) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_matches, __pyx_t_6) < 0) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":42
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
  * 
  *         @classmethod
  *         def click_start_game(cls):             # <<<<<<<<<<<<<<
  *             api = ZeroADAPI.instance
  * 
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_5click_start_game, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_start_g, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 42, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_8MainMenu_5click_start_game, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_MainMenu_click_start_g, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__27)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":41
- *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 1, preset)
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":51
+ *             api.input_controller.click_string("Matches", MouseButton.LEFT, frame, 5, preset)
  * 
  *         @classmethod             # <<<<<<<<<<<<<<
  *         def click_start_game(cls):
  *             api = ZeroADAPI.instance
  */
-  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_start_game, __pyx_t_7) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_click_start_game, __pyx_t_7) < 0) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":22
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":32
  *         pass
  * 
  *     class MainMenu:             # <<<<<<<<<<<<<<
  * 
  *         @classmethod
  */
-  __pyx_t_7 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_MainMenu, __pyx_empty_tuple, __pyx_t_5, NULL, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_MainMenu, __pyx_empty_tuple, __pyx_t_5, NULL, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_MainMenu, __pyx_t_7) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_MainMenu, __pyx_t_7) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":50
- *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 1, preset)
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":60
+ *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 5, preset)
  * 
- *     class Game:             # <<<<<<<<<<<<<<
+ *     class GameInterface:             # <<<<<<<<<<<<<<
  *         @classmethod
- *         def get_region_text(cls, region_name):
+ *         def get_points(cls):
  */
-  __pyx_t_5 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_Game, __pyx_n_s_ZeroADAPI_Game, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_GameInterface, __pyx_n_s_ZeroADAPI_GameInterface, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 60, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":52
- *     class Game:
- *         @classmethod
- *         def get_region_text(cls, region_name):             # <<<<<<<<<<<<<<
- *             api = ZeroADAPI.instance
- *             game_frame = api.game.grab_latest_frame()
- */
-  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_1get_region_text, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_Game_get_region_text, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":51
- * 
- *     class Game:
- *         @classmethod             # <<<<<<<<<<<<<<
- *         def get_region_text(cls, region_name):
- *             api = ZeroADAPI.instance
- */
-  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 51, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_get_region_text, __pyx_t_6) < 0) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
   /* "SerpentZeroADGamePlugin/files/api/api.pyx":62
- *             return text
+ *     class GameInterface:
  *         @classmethod
- *         def make_random_move(cls):             # <<<<<<<<<<<<<<
- *             api = ZeroADAPI.instance
+ *         def get_points(cls):             # <<<<<<<<<<<<<<
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_4Game_3make_random_move, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_Game_make_random_move, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_1get_points, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_get_poin, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__29)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
 
   /* "SerpentZeroADGamePlugin/files/api/api.pyx":61
- *             text = serpent.ocr.perform_ocr(food_image)
- *             return text
+ * 
+ *     class GameInterface:
  *         @classmethod             # <<<<<<<<<<<<<<
- *         def make_random_move(cls):
+ *         def get_points(cls):
+ *             return ZeroADAPI.instance.game.points
+ */
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_get_points, __pyx_t_6) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":65
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod
+ *         def update_food_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_3update_food_score, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_update_f, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":64
+ *         def get_points(cls):
+ *             return ZeroADAPI.instance.game.points
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def update_food_score(cls):
  *             api = ZeroADAPI.instance
  */
-  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_make_random_move, __pyx_t_7) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_update_food_score, __pyx_t_7) < 0) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":50
- *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 1, preset)
- * 
- *     class Game:             # <<<<<<<<<<<<<<
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":76
+ *                 print("Moving on")
  *         @classmethod
- *         def get_region_text(cls, region_name):
+ *         def update_wood_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
  */
-  __pyx_t_7 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_Game, __pyx_empty_tuple, __pyx_t_5, NULL, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_5update_wood_score, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_update_w, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_Game, __pyx_t_7) < 0) __PYX_ERR(0, 50, __pyx_L1_error)
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":75
+ *                 print(e)
+ *                 print("Moving on")
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def update_wood_score(cls):
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 75, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_update_wood_score, __pyx_t_6) < 0) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":87
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_stone_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_7update_stone_score, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_update_s, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":86
+ *                 print(e)
+ *                 print("Moving on")
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def update_stone_score(cls):
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_update_stone_score, __pyx_t_7) < 0) __PYX_ERR(0, 87, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":98
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_iron_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_9update_iron_score, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_update_i, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__37)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":97
+ *                 print(e)
+ *                 print("Moving on")
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def update_iron_score(cls):
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 97, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_update_iron_score, __pyx_t_6) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":109
+ *                 print("Moving on")
+ *         @classmethod
+ *         def update_population_score(cls):             # <<<<<<<<<<<<<<
+ *             api = ZeroADAPI.instance
+ *             try:
+ */
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_13GameInterface_11update_population_score, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameInterface_update_p, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 109, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":108
+ *                 print(e)
+ *                 print("Moving on")
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def update_population_score(cls):
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_update_population_score, __pyx_t_7) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":60
+ *             api.input_controller.click_string("Start Game!", MouseButton.LEFT, frame, 5, preset)
+ * 
+ *     class GameInterface:             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def get_points(cls):
+ */
+  __pyx_t_7 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_GameInterface, __pyx_empty_tuple, __pyx_t_5, NULL, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 60, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_GameInterface, __pyx_t_7) < 0) __PYX_ERR(0, 60, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "SerpentZeroADGamePlugin/files/api/api.pyx":13
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":121
+ *                 print("Moving on")
+ * 
+ *     class GameAction:             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def take_action(cls):
+ */
+  __pyx_t_5 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_GameAction, __pyx_n_s_ZeroADAPI_GameAction, (PyObject *) NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, (PyObject *) NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":123
+ *     class GameAction:
+ *         @classmethod
+ *         def take_action(cls):             # <<<<<<<<<<<<<<
+ *             # take a game action --> using mouse
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_1take_action, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameAction_take_action, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__41)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":122
+ * 
+ *     class GameAction:
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def take_action(cls):
+ *             # take a game action --> using mouse
+ */
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_take_action, __pyx_t_6) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":128
+ * 
+ *         @classmethod
+ *         def move_view(cls):             # <<<<<<<<<<<<<<
+ *             # move the view screen by a set amount
+ *             api = ZeroADAPI.instance
+ */
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_3move_view, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameAction_move_view, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":127
+ *             api = ZeroADAPI.instance
+ * 
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def move_view(cls):
+ *             # move the view screen by a set amount
+ */
+  __pyx_t_7 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_move_view, __pyx_t_7) < 0) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":133
+ * 
+ *         @classmethod
+ *         def make_random_move(cls):             # <<<<<<<<<<<<<<
+ *             # make a random mouse movement
+ *             # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+ */
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_23SerpentZeroADGamePlugin_5files_3api_3api_10GameAction_5make_random_move, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_n_s_ZeroADAPI_GameAction_make_random, NULL, __pyx_n_s_SerpentZeroADGamePlugin_files_ap, __pyx_d, ((PyObject *)__pyx_codeobj__45)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":132
+ *             api = ZeroADAPI.instance
+ * 
+ *         @classmethod             # <<<<<<<<<<<<<<
+ *         def make_random_move(cls):
+ *             # make a random mouse movement
+ */
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyObject_SetItem(__pyx_t_5, __pyx_n_s_make_random_move, __pyx_t_6) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":121
+ *                 print("Moving on")
+ * 
+ *     class GameAction:             # <<<<<<<<<<<<<<
+ *         @classmethod
+ *         def take_action(cls):
+ */
+  __pyx_t_6 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_GameAction, __pyx_empty_tuple, __pyx_t_5, NULL, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  if (PyObject_SetItem(__pyx_t_3, __pyx_n_s_GameAction, __pyx_t_6) < 0) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+  /* "SerpentZeroADGamePlugin/files/api/api.pyx":14
  * 
  * 
  * class ZeroADAPI(GameAPI):             # <<<<<<<<<<<<<<
  * 
  *     def __init__(self, game=None):
  */
-  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_ZeroADAPI, __pyx_t_2, __pyx_t_3, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_ZeroADAPI, __pyx_t_2, __pyx_t_3, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_CyFunction_InitClassCell(__pyx_t_4, __pyx_t_5) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  if (__Pyx_CyFunction_InitClassCell(__pyx_t_4, __pyx_t_5) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ZeroADAPI, __pyx_t_5) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ZeroADAPI, __pyx_t_5) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -3318,26 +5903,8 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 }
 #endif
 
-/* GetModuleGlobalName */
-static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
-    PyObject *result;
-#if !CYTHON_AVOID_BORROWED_REFS
-    result = PyDict_GetItem(__pyx_d, name);
-    if (likely(result)) {
-        Py_INCREF(result);
-    } else {
-#else
-    result = PyObject_GetItem(__pyx_d, name);
-    if (!result) {
-        PyErr_Clear();
-#endif
-        result = __Pyx_GetBuiltinName(name);
-    }
-    return result;
-}
-
 /* PyCFunctionFastCall */
-  #if CYTHON_FAST_PYCCALL
+#if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
     PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
     PyCFunction meth = PyCFunction_GET_FUNCTION(func);
@@ -3360,7 +5927,7 @@ static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, P
 #endif
 
 /* PyFunctionFastCall */
-  #if CYTHON_FAST_PYCALL
+#if CYTHON_FAST_PYCALL
 #include "frameobject.h"
 static PyObject* __Pyx_PyFunction_FastCallNoKw(PyCodeObject *co, PyObject **args, Py_ssize_t na,
                                                PyObject *globals) {
@@ -3480,7 +6047,7 @@ done:
 #endif
 
 /* PyObjectCallMethO */
-  #if CYTHON_COMPILING_IN_CPYTHON
+#if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
     PyObject *self, *result;
     PyCFunction cfunc;
@@ -3500,7 +6067,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
 #endif
 
 /* PyObjectCallOneArg */
-  #if CYTHON_COMPILING_IN_CPYTHON
+#if CYTHON_COMPILING_IN_CPYTHON
 static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
     PyObject *result;
     PyObject *args = PyTuple_New(1);
@@ -3540,7 +6107,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 #endif
 
 /* PyObjectCallNoArg */
-  #if CYTHON_COMPILING_IN_CPYTHON
+#if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
 #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(func)) {
@@ -3560,8 +6127,208 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
 }
 #endif
 
+/* GetModuleGlobalName */
+  static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
+    PyObject *result;
+#if !CYTHON_AVOID_BORROWED_REFS
+    result = PyDict_GetItem(__pyx_d, name);
+    if (likely(result)) {
+        Py_INCREF(result);
+    } else {
+#else
+    result = PyObject_GetItem(__pyx_d, name);
+    if (!result) {
+        PyErr_Clear();
+#endif
+        result = __Pyx_GetBuiltinName(name);
+    }
+    return result;
+}
+
+/* SaveResetException */
+    #if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* PyErrExceptionMatches */
+    #if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err) {
+    PyObject *exc_type = tstate->curexc_type;
+    if (exc_type == err) return 1;
+    if (unlikely(!exc_type)) return 0;
+    return PyErr_GivenExceptionMatches(exc_type, err);
+}
+#endif
+
+/* GetException */
+    #if CYTHON_FAST_THREAD_STATE
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb) {
+#endif
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_FAST_THREAD_STATE
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
+}
+
+/* GetItemInt */
+      static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
+    PyObject *r;
+    if (!j) return NULL;
+    r = PyObject_GetItem(o, j);
+    Py_DECREF(j);
+    return r;
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyList_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyList_GET_SIZE(o)))) {
+        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyTuple_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyTuple_GET_SIZE(o)))) {
+        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
+                                                     CYTHON_NCP_UNUSED int wraparound,
+                                                     CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
+    if (is_list || PyList_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
+        if ((!boundscheck) || (likely((n >= 0) & (n < PyList_GET_SIZE(o))))) {
+            PyObject *r = PyList_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    }
+    else if (PyTuple_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
+        if ((!boundscheck) || likely((n >= 0) & (n < PyTuple_GET_SIZE(o)))) {
+            PyObject *r = PyTuple_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    } else {
+        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
+        if (likely(m && m->sq_item)) {
+            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
+                Py_ssize_t l = m->sq_length(o);
+                if (likely(l >= 0)) {
+                    i += l;
+                } else {
+                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
+                        return NULL;
+                    PyErr_Clear();
+                }
+            }
+            return m->sq_item(o, i);
+        }
+    }
+#else
+    if (is_list || PySequence_Check(o)) {
+        return PySequence_GetItem(o, i);
+    }
+#endif
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+}
+
 /* Import */
-    static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
+      static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
     PyObject *empty_list = 0;
     PyObject *module = 0;
     PyObject *global_dict = 0;
@@ -3635,7 +6402,7 @@ bad:
 }
 
 /* ImportFrom */
-    static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
+      static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
     PyObject* value = __Pyx_PyObject_GetAttrStr(module, name);
     if (unlikely(!value) && PyErr_ExceptionMatches(PyExc_AttributeError)) {
         PyErr_Format(PyExc_ImportError,
@@ -3649,7 +6416,7 @@ bad:
 }
 
 /* CalculateMetaclass */
-    static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases) {
+      static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases) {
     Py_ssize_t i, nbases = PyTuple_GET_SIZE(bases);
     for (i=0; i < nbases; i++) {
         PyTypeObject *tmptype;
@@ -3688,7 +6455,7 @@ bad:
 }
 
 /* FetchCommonType */
-    static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
+      static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
     PyObject* fake_module;
     PyTypeObject* cached_type = NULL;
     fake_module = PyImport_AddModule((char*) "_cython_" CYTHON_ABI);
@@ -3727,7 +6494,7 @@ bad:
 }
 
 /* CythonFunction */
-    static PyObject *
+      static PyObject *
 __Pyx_CyFunction_get_doc(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *closure)
 {
     if (unlikely(op->func_doc == NULL)) {
@@ -4310,7 +7077,7 @@ static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, Py
 }
 
 /* ClassMethod */
-        static PyObject* __Pyx_Method_ClassMethod(PyObject *method) {
+          static PyObject* __Pyx_Method_ClassMethod(PyObject *method) {
 #if CYTHON_COMPILING_IN_PYPY
     if (PyObject_TypeCheck(method, &PyWrapperDescr_Type)) {
         return PyClassMethod_New(method);
@@ -4355,7 +7122,7 @@ static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, Py
 }
 
 /* Py3ClassCreate */
-          static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name,
+            static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name,
                                            PyObject *qualname, PyObject *mkw, PyObject *modname, PyObject *doc) {
     PyObject *ns;
     if (metaclass) {
@@ -4422,7 +7189,7 @@ static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObj
 }
 
 /* CLineInTraceback */
-          static int __Pyx_CLineForTraceback(int c_line) {
+            static int __Pyx_CLineForTraceback(int c_line) {
 #ifdef CYTHON_CLINE_IN_TRACEBACK
     return ((CYTHON_CLINE_IN_TRACEBACK)) ? c_line : 0;
 #else
@@ -4458,7 +7225,7 @@ static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObj
 }
 
 /* CodeObjectCache */
-          static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
+            static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;
     if (end >= 0 && code_line > entries[end].code_line) {
         return count;
@@ -4538,7 +7305,7 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object) {
 }
 
 /* AddTraceback */
-          #include "compile.h"
+            #include "compile.h"
 #include "frameobject.h"
 #include "traceback.h"
 static PyCodeObject* __Pyx_CreateCodeObjectForTraceback(
@@ -4622,7 +7389,7 @@ bad:
 }
 
 /* Print */
-          #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+            #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
 static PyObject *__Pyx_GetStdout(void) {
     PyObject *f = PySys_GetObject((char *)"stdout");
     if (!f) {
@@ -4727,8 +7494,39 @@ bad:
 }
 #endif
 
+/* CIntToPy */
+            static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+    const long neg_one = (long) -1, const_zero = (long) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
+                                     little, !is_unsigned);
+    }
+}
+
 /* PrintOne */
-          #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+            #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
 static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
     if (!f) {
         if (!(f = __Pyx_GetStdout()))
@@ -4765,7 +7563,7 @@ static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
 #endif
 
 /* CyFunctionClassCell */
-          static CYTHON_INLINE int __Pyx_CyFunction_InitClassCell(PyObject *cyfunctions, PyObject *classobj) {
+            static CYTHON_INLINE int __Pyx_CyFunction_InitClassCell(PyObject *cyfunctions, PyObject *classobj) {
     Py_ssize_t i, count = PyList_GET_SIZE(cyfunctions);
     for (i = 0; i < count; i++) {
         __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *)
@@ -4785,39 +7583,8 @@ static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
     return 0;
 }
 
-/* CIntToPy */
-          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-    const long neg_one = (long) -1, const_zero = (long) 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-#endif
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-#endif
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
-}
-
 /* CIntFromPyVerify */
-          #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+            #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
 #define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
@@ -4839,7 +7606,7 @@ static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
     }
 
 /* CIntFromPy */
-          static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
+            static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -5028,7 +7795,7 @@ raise_neg_overflow:
 }
 
 /* CIntFromPy */
-          static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
+            static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -5217,7 +7984,7 @@ raise_neg_overflow:
 }
 
 /* CheckBinaryVersion */
-          static int __Pyx_check_binary_version(void) {
+            static int __Pyx_check_binary_version(void) {
     char ctversion[4], rtversion[4];
     PyOS_snprintf(ctversion, 4, "%d.%d", PY_MAJOR_VERSION, PY_MINOR_VERSION);
     PyOS_snprintf(rtversion, 4, "%s", Py_GetVersion());
@@ -5233,7 +8000,7 @@ raise_neg_overflow:
 }
 
 /* InitStrings */
-          static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
+            static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
     while (t->p) {
         #if PY_MAJOR_VERSION < 3
         if (t->is_unicode) {
