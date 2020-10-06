@@ -4,6 +4,8 @@ import random
 from serpent.game_agent import GameAgent
 from serpent.input_controller import MouseButton
 
+from .helpers.classifier.main import Classifier
+
 class SerpentOzymandiasGameAgent(GameAgent):
 
     def __init__(self, **kwargs):
@@ -16,12 +18,11 @@ class SerpentOzymandiasGameAgent(GameAgent):
     def setup_play(self):
         # define the current area of the game
         #self.context = "main_menu"
-        self.context = "playing_game"
-
-
-        pass
+        #self.context = "playing_game"
+        self.focus_classifier = Classifier()
 
     def handle_play(self, game_frame):
+        """
         if(self.context == "main_menu"):
             print("New Game")
             self.game.api.MainMenu.click_single_player()
@@ -39,18 +40,15 @@ class SerpentOzymandiasGameAgent(GameAgent):
             self.context = "playing_game"
         elif(self.context == "playing_game"):
             print("playing game")
+        """
+        self.game.api.GameInterface.update_food_score()
+        self.game.api.GameInterface.update_wood_score()
+        self.game.api.GameInterface.update_stone_score()
+        self.game.api.GameInterface.update_iron_score()
+        self.game.api.GameInterface.update_population_score()
 
-            #print(self.game.sprites)
-            #print(self.game.points)
+        focus = focus_classifier.classify(game_frame.half_resolution_frame)
 
-            self.game.api.GameInterface.update_food_score()
-            self.game.api.GameInterface.update_wood_score()
-            self.game.api.GameInterface.update_stone_score()
-            self.game.api.GameInterface.update_iron_score()
-            self.game.api.GameInterface.update_population_score()
+        print(focus)
+        #self.game.api.GameAction.make_random_move()
 
-            self.game.api.GameAction.make_random_move()
-
-            # self.input_controller.move(random.randrange(1000),random.randrange(800),0.1)
-            # self.input_controller.click(MouseButton.RIGHT)
-        pass

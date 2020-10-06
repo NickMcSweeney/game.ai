@@ -25,7 +25,15 @@ int main(int argc, char *argv[]) {
     char *args[] = {programName, "run", NULL, NULL, NULL, NULL, NULL, NULL};
     char *path;
 
-    if (strcmp(arg,"--build-api")==0 || strcmp(arg,"-ba")==0) {
+    if (strcmp(arg,"--build")==0 || strcmp(arg,"-b")==0) {
+        // set args to build the pyx files in the GameAgent Plugin
+        printf("building cython files for plugins");
+        path = "./";
+        args[2] = "python";
+        args[3] = "setup.py";
+        args[4] = "build_ext";
+        args[5] = "--inplace";
+    } else if (strcmp(arg,"--build-api")==0 || strcmp(arg,"-ba")==0) {
         // Set args to build the pyx files in the Game api library 
         printf("building cython files for api library");
         path = "plugins/SerpentZeroADGamePlugin/files/api";
@@ -49,6 +57,22 @@ int main(int argc, char *argv[]) {
         args[3] = "-a";
         args[4] = "-i";
         args[5] = "*.pyx";
+    } else if (strcmp(arg,"--build-oz")==0 || strcmp(arg,"-bo")==0) {
+        // set args to build the pyx files in the GameAgent Plugin
+        printf("building cython files for ozymandias");
+        path = "plugins/SerpentOzymandiasGameAgentPlugin";
+        args[2] = "python";
+        args[3] = "setup.py";
+        args[4] = "build_ext";
+        args[5] = "--inplace";
+    } else if (strcmp(arg,"--build-zeroad")==0 || strcmp(arg,"-bz")==0) {
+        // set args to build the pyx files in the Game Plugin
+        printf("building cython files for 0ad");
+        path = "plugins/SerpentZeroADGamePlugin";
+        args[2] = "python";
+        args[3] = "setup.py";
+        args[4] = "build_ext";
+        args[5] = "--inplace";
     } else if(strcmp(arg,"--launch-game")==0 || strcmp(arg,"-l")==0) {
         // set args to launch Zero.AD game with serpent
         printf("launching game with serpent.ai");

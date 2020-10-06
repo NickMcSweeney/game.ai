@@ -828,9 +828,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
-/* ImportFrom.proto */
-static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
-
 /* CLineInTraceback.proto */
 static int __Pyx_CLineForTraceback(int c_line);
 
@@ -862,6 +859,9 @@ static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
+/* CStringEquals.proto */
+static CYTHON_INLINE int __Pyx_StrEq(const char *, const char *);
+
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
 
@@ -874,38 +874,48 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 int __pyx_module_is_main_main = 0;
 
 /* Implementation of 'main' */
+static const char __pyx_k_[] = "*";
 static const char __pyx_k_cnn[] = "cnn";
-static const char __pyx_k_run[] = "run";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_main_2[] = "main";
 static const char __pyx_k_libs_cnn[] = "libs.cnn";
+static const char __pyx_k_plot_hist[] = "plot_hist";
+static const char __pyx_k_data_input[] = "data_input";
+static const char __pyx_k_save_model[] = "save_model";
+static const char __pyx_k_build_model[] = "build_model";
 static const char __pyx_k_cclassifier[] = "cclassifier";
+static const char __pyx_k_train_model[] = "train_model";
 static const char __pyx_k_src_main_pyx[] = "src/main.pyx";
 static const char __pyx_k_train_classifier[] = "train_classifier";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
+static PyObject *__pyx_n_s_;
+static PyObject *__pyx_n_s_build_model;
 static PyObject *__pyx_n_s_cclassifier;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_cnn;
+static PyObject *__pyx_n_s_data_input;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_libs_cnn;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_main_2;
-static PyObject *__pyx_n_s_run;
+static PyObject *__pyx_n_s_plot_hist;
+static PyObject *__pyx_n_s_save_model;
 static PyObject *__pyx_kp_s_src_main_pyx;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_train_classifier;
+static PyObject *__pyx_n_s_train_model;
 static PyObject *__pyx_pf_4main_train_classifier(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_tuple_;
-static PyObject *__pyx_codeobj__2;
+static PyObject *__pyx_tuple__2;
+static PyObject *__pyx_codeobj__3;
 
 /* "main.pyx":3
- * from libs.cnn import cclassifier
+ * from libs.cnn import *
  * 
  * def train_classifier():             # <<<<<<<<<<<<<<
  *   cnn = cclassifier()
- *   cnn.run()
+ *   cnn.data_input()
  */
 
 /* Python wrapper */
@@ -935,7 +945,8 @@ static PyObject *__pyx_pf_4main_train_classifier(CYTHON_UNUSED PyObject *__pyx_s
  * 
  * def train_classifier():
  *   cnn = cclassifier()             # <<<<<<<<<<<<<<
- *   cnn.run()
+ *   cnn.data_input()
+ *   cnn.build_model()
  */
   __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_cclassifier); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -963,9 +974,11 @@ static PyObject *__pyx_pf_4main_train_classifier(CYTHON_UNUSED PyObject *__pyx_s
   /* "main.pyx":5
  * def train_classifier():
  *   cnn = cclassifier()
- *   cnn.run()             # <<<<<<<<<<<<<<
+ *   cnn.data_input()             # <<<<<<<<<<<<<<
+ *   cnn.build_model()
+ *   cnn.train_model()
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_run); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_data_input); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -987,12 +1000,126 @@ static PyObject *__pyx_pf_4main_train_classifier(CYTHON_UNUSED PyObject *__pyx_s
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
+  /* "main.pyx":6
+ *   cnn = cclassifier()
+ *   cnn.data_input()
+ *   cnn.build_model()             # <<<<<<<<<<<<<<
+ *   cnn.train_model()
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_build_model); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "main.pyx":7
+ *   cnn.data_input()
+ *   cnn.build_model()
+ *   cnn.train_model()             # <<<<<<<<<<<<<<
+ * 
+ *   cnn.save_model()
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_train_model); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "main.pyx":9
+ *   cnn.train_model()
+ * 
+ *   cnn.save_model()             # <<<<<<<<<<<<<<
+ * 
+ *   cnn.plot_hist()
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_save_model); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "main.pyx":11
+ *   cnn.save_model()
+ * 
+ *   cnn.plot_hist()             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cnn, __pyx_n_s_plot_hist); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
   /* "main.pyx":3
- * from libs.cnn import cclassifier
+ * from libs.cnn import *
  * 
  * def train_classifier():             # <<<<<<<<<<<<<<
  *   cnn = cclassifier()
- *   cnn.run()
+ *   cnn.data_input()
  */
 
   /* function exit code */
@@ -1015,6 +1142,261 @@ static PyMethodDef __pyx_methods[] = {
   {0, 0, 0, 0}
 };
 
+static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
+  static const char* internal_type_names[] = {
+    0
+  };
+  const char** type_name = internal_type_names;
+  while (*type_name) {
+    if (__Pyx_StrEq(name, *type_name)) {
+      PyErr_Format(PyExc_TypeError, "Cannot overwrite C type %s", name);
+      goto bad;
+    }
+    type_name++;
+  }
+  if (0);
+  else {
+    if (PyObject_SetAttr(__pyx_m, py_name, o) < 0) goto bad;
+  }
+  return 0;
+  bad:
+  return -1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static int
+__Pyx_import_all_from(PyObject *locals, PyObject *v)
+{
+    PyObject *all = PyObject_GetAttrString(v, "__all__");
+    PyObject *dict, *name, *value;
+    int skip_leading_underscores = 0;
+    int pos, err;
+
+    if (all == NULL) {
+        if (!PyErr_ExceptionMatches(PyExc_AttributeError))
+            return -1;
+        PyErr_Clear();
+        dict = PyObject_GetAttrString(v, "__dict__");
+        if (dict == NULL) {
+            if (!PyErr_ExceptionMatches(PyExc_AttributeError))
+                return -1;
+            PyErr_SetString(PyExc_ImportError,
+            "from-import-* object has no __dict__ and no __all__");
+            return -1;
+        }
+#if PY_MAJOR_VERSION < 3
+        all = PyObject_CallMethod(dict, (char *)"keys", NULL);
+#else
+        all = PyMapping_Keys(dict);
+#endif
+        Py_DECREF(dict);
+        if (all == NULL)
+            return -1;
+        skip_leading_underscores = 1;
+    }
+
+    for (pos = 0, err = 0; ; pos++) {
+        name = PySequence_GetItem(all, pos);
+        if (name == NULL) {
+            if (!PyErr_ExceptionMatches(PyExc_IndexError))
+                err = -1;
+            else
+                PyErr_Clear();
+            break;
+        }
+        if (skip_leading_underscores &&
+#if PY_MAJOR_VERSION < 3
+            PyString_Check(name) &&
+            PyString_AS_STRING(name)[0] == '_')
+#else
+            PyUnicode_Check(name) &&
+            PyUnicode_AS_UNICODE(name)[0] == '_')
+#endif
+        {
+            Py_DECREF(name);
+            continue;
+        }
+        value = PyObject_GetAttr(v, name);
+        if (value == NULL)
+            err = -1;
+        else if (PyDict_CheckExact(locals))
+            err = PyDict_SetItem(locals, name, value);
+        else
+            err = PyObject_SetItem(locals, name, value);
+        Py_DECREF(name);
+        Py_XDECREF(value);
+        if (err != 0)
+            break;
+    }
+    Py_DECREF(all);
+    return err;
+}
+
+
+static int __pyx_import_star(PyObject* m) {
+
+    int i;
+    int ret = -1;
+    char* s;
+    PyObject *locals = 0;
+    PyObject *list = 0;
+#if PY_MAJOR_VERSION >= 3
+    PyObject *utf8_name = 0;
+#endif
+    PyObject *name;
+    PyObject *item;
+
+    locals = PyDict_New();              if (!locals) goto bad;
+    if (__Pyx_import_all_from(locals, m) < 0) goto bad;
+    list = PyDict_Items(locals);        if (!list) goto bad;
+
+    for(i=0; i<PyList_GET_SIZE(list); i++) {
+        name = PyTuple_GET_ITEM(PyList_GET_ITEM(list, i), 0);
+        item = PyTuple_GET_ITEM(PyList_GET_ITEM(list, i), 1);
+#if PY_MAJOR_VERSION >= 3
+        utf8_name = PyUnicode_AsUTF8String(name);
+        if (!utf8_name) goto bad;
+        s = PyBytes_AS_STRING(utf8_name);
+        if (__pyx_import_star_set(item, name, s) < 0) goto bad;
+        Py_DECREF(utf8_name); utf8_name = 0;
+#else
+        s = PyString_AsString(name);
+        if (!s) goto bad;
+        if (__pyx_import_star_set(item, name, s) < 0) goto bad;
+#endif
+    }
+    ret = 0;
+
+bad:
+    Py_XDECREF(locals);
+    Py_XDECREF(list);
+#if PY_MAJOR_VERSION >= 3
+    Py_XDECREF(utf8_name);
+#endif
+    return ret;
+}
+
+
+
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef __pyx_moduledef = {
   #if PY_VERSION_HEX < 0x03020000
@@ -1034,17 +1416,22 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 1},
+  {&__pyx_n_s_build_model, __pyx_k_build_model, sizeof(__pyx_k_build_model), 0, 0, 1, 1},
   {&__pyx_n_s_cclassifier, __pyx_k_cclassifier, sizeof(__pyx_k_cclassifier), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_cnn, __pyx_k_cnn, sizeof(__pyx_k_cnn), 0, 0, 1, 1},
+  {&__pyx_n_s_data_input, __pyx_k_data_input, sizeof(__pyx_k_data_input), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_libs_cnn, __pyx_k_libs_cnn, sizeof(__pyx_k_libs_cnn), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_main_2, __pyx_k_main_2, sizeof(__pyx_k_main_2), 0, 0, 1, 1},
-  {&__pyx_n_s_run, __pyx_k_run, sizeof(__pyx_k_run), 0, 0, 1, 1},
+  {&__pyx_n_s_plot_hist, __pyx_k_plot_hist, sizeof(__pyx_k_plot_hist), 0, 0, 1, 1},
+  {&__pyx_n_s_save_model, __pyx_k_save_model, sizeof(__pyx_k_save_model), 0, 0, 1, 1},
   {&__pyx_kp_s_src_main_pyx, __pyx_k_src_main_pyx, sizeof(__pyx_k_src_main_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_train_classifier, __pyx_k_train_classifier, sizeof(__pyx_k_train_classifier), 0, 0, 1, 1},
+  {&__pyx_n_s_train_model, __pyx_k_train_model, sizeof(__pyx_k_train_model), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
@@ -1056,16 +1443,16 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
   /* "main.pyx":3
- * from libs.cnn import cclassifier
+ * from libs.cnn import *
  * 
  * def train_classifier():             # <<<<<<<<<<<<<<
  *   cnn = cclassifier()
- *   cnn.run()
+ *   cnn.data_input()
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_n_s_cnn); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple_);
-  __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(0, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_src_main_pyx, __pyx_n_s_train_classifier, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_n_s_cnn); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__2);
+  __Pyx_GIVEREF(__pyx_tuple__2);
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(0, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__2, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_src_main_pyx, __pyx_n_s_train_classifier, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -1175,30 +1562,27 @@ PyMODINIT_FUNC PyInit_main(void)
   #endif
 
   /* "main.pyx":1
- * from libs.cnn import cclassifier             # <<<<<<<<<<<<<<
+ * from libs.cnn import *             # <<<<<<<<<<<<<<
  * 
  * def train_classifier():
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s_cclassifier);
-  __Pyx_GIVEREF(__pyx_n_s_cclassifier);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_cclassifier);
+  __Pyx_INCREF(__pyx_n_s_);
+  __Pyx_GIVEREF(__pyx_n_s_);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_);
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_libs_cnn, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_cclassifier); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cclassifier, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_import_star(__pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "main.pyx":3
- * from libs.cnn import cclassifier
+ * from libs.cnn import *
  * 
  * def train_classifier():             # <<<<<<<<<<<<<<
  *   cnn = cclassifier()
- *   cnn.run()
+ *   cnn.data_input()
  */
   __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4main_1train_classifier, NULL, __pyx_n_s_main_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -1206,7 +1590,7 @@ PyMODINIT_FUNC PyInit_main(void)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "main.pyx":1
- * from libs.cnn import cclassifier             # <<<<<<<<<<<<<<
+ * from libs.cnn import *             # <<<<<<<<<<<<<<
  * 
  * def train_classifier():
  */
@@ -1604,20 +1988,6 @@ bad:
     Py_XDECREF(empty_list);
     Py_XDECREF(empty_dict);
     return module;
-}
-
-/* ImportFrom */
-    static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
-    PyObject* value = __Pyx_PyObject_GetAttrStr(module, name);
-    if (unlikely(!value) && PyErr_ExceptionMatches(PyExc_AttributeError)) {
-        PyErr_Format(PyExc_ImportError,
-        #if PY_MAJOR_VERSION < 3
-            "cannot import name %.230s", PyString_AS_STRING(name));
-        #else
-            "cannot import name %S", name);
-        #endif
-    }
-    return value;
 }
 
 /* CLineInTraceback */
@@ -2249,6 +2619,12 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+/* CStringEquals */
+    static CYTHON_INLINE int __Pyx_StrEq(const char *s1, const char *s2) {
+    while (*s1 != '\0' && *s1 == *s2) { s1++; s2++; }
+    return *s1 == *s2;
 }
 
 /* CheckBinaryVersion */

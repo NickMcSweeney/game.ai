@@ -14,67 +14,64 @@ from keras import Sequential
 
 import pathlib
 
+from libs.utils import resize_images
+
+### Global Variables
+# define image data location
+data_dir = "../../datasets/collect_frames_for_context"
+# define image data dimensions
+cdef int img_height = 200
+cdef int img_width = 300
+# define class number
+cdef int num_classes = 3
+# define model params
+cdef int batch_size = 32
+cdef int epochs=10
+# define the save location
+model_build_path = "models/context_classifier"
+
 class cclassifier():
   def __init__(self):
-    pass
+    # setup static variables
+    # define model params
+    self.model = None
+    self.AUTOTUNE = tf.data.experimental.AUTOTUNE
 
-  def run(self):
-    # Import the image data
-    data_dir = "../../datasets/collect_frames_for_context"
-    data_dir = pathlib.Path(data_dir)
-    print(data_dir)
-    image_count = len(list(data_dir.glob('*/*.jpg')))
-    print(image_count)
+  def data_input(self):
+    # Setup data input pipeline
+
+    # scale the images to 300x200
+    resize_images()
+
+    # create path loaction
+    data_path = pathlib.Path(data_dir)
     
-    # (Optional) Test files
-    #roses = list(data_dir.glob('no_selection/*'))
-    #PIL.Image.open(str(roses[0]))
-
-    batch_size = 32
-    img_height = 200
-    img_width = 300
-    train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-      data_dir,
+    # create training set (80%)
+    self.train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+      data_path,
       validation_split=0.2,
       subset="training",
       seed=123,
       image_size=(img_height, img_width),
       batch_size=batch_size)
-
-    val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-      data_dir,
+    # create validation data (20%)
+    self.val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+      data_path,
       validation_split=0.2,
       subset="validation",
       seed=123,
       image_size=(img_height, img_width),
       batch_size=batch_size)
+    # declare classnames
+    self.class_names = self.train_ds.class_names
+    # Pre Cache data for performance
+    self.train_ds = self.train_ds.cache().shuffle(1000).prefetch(buffer_size=self.AUTOTUNE)
+    self.val_ds = self.val_ds.cache().prefetch(buffer_size=self.AUTOTUNE)
 
-    class_names = train_ds.class_names
-    print(class_names)
-
-    # Visualise the data
-    plt.figure(figsize=(10, 10))
-    for images, labels in train_ds.take(1):
-      for i in range(9):
-        ax = plt.subplot(3, 3, i + 1)
-        plt.imshow(images[i].numpy().astype("uint8"))
-        plt.title(class_names[labels[i]])
-        plt.axis("off")
-
-    # Config for performance
-    AUTOTUNE = tf.data.experimental.AUTOTUNE
-
-    train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
-    val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
-    # Standardize the data
+  def build_model(self):
+    # Build the Model
     normalization_layer = layers.experimental.preprocessing.Rescaling(1./255)
-
-    
-    # create the model
-    num_classes = 3
-
-    model = Sequential([
+    self.model = Sequential([
       layers.experimental.preprocessing.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
       layers.Conv2D(16, 3, padding='same', activation='relu'),
       layers.MaxPooling2D(),
@@ -86,27 +83,42 @@ class cclassifier():
       layers.Dense(128, activation='relu'),
       layers.Dense(num_classes)
     ])
-
-    # compile the model
-    model.compile(optimizer='adam',
+    self.model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['accuracy'])
-    model.summary()
+    self.model.summary()
 
-    # Train the model
-    epochs=10
-    history = model.fit(
-      train_ds,
-      validation_data=val_ds,
+  def train_model(self):
+    # Run training
+    print("Training Model")
+    self.history = self.model.fit(
+      self.train_ds,
+      validation_data=self.val_ds,
       epochs=epochs
     )
+    print("Training Complete")
 
-    # show results
-    acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
+  def save_model(self):
+    # Save the model to file
+    print("Saving Model")
+    self.model.save(model_build_path) 
 
-    loss=history.history['loss']
-    val_loss=history.history['val_loss']
+  def open_model(self):
+    print("Opening Model")
+    self.model = tf.keras.models.load_model(model_build_path)
+
+    # Check its architecture
+    self.model.summary()
+
+
+  def plot_hist(self):
+    print("Plotting Results")
+    # plot the results from training the model
+    acc = self.history.history['accuracy']
+    val_acc = self.history.history['val_accuracy']
+
+    loss=self.history.history['loss']
+    val_loss=self.history.history['val_loss']
 
     epochs_range = range(epochs)
 
@@ -123,5 +135,4 @@ class cclassifier():
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
     plt.show()
-
 

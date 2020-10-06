@@ -9,6 +9,7 @@ def resize_images():
   dirs = list(data_dir.glob('*'))
   for folder in dirs:
     files = list(folder.glob('*'))
+    print("resizing %d images" % len(files))
     for f in files:
       try: 
           # Read image from disk. 
