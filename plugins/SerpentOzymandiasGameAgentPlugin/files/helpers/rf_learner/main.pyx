@@ -1,4 +1,4 @@
-from main import Memory, Model
+from learner import Memory, Model
 #from memory import Memory
 #from model import Model
 

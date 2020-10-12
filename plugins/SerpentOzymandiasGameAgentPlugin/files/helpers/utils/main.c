@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.utils.utils",
+        "name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.utils.main",
         "sources": [
             "plugins/SerpentOzymandiasGameAgentPlugin/files/helpers/utils/main.pyx"
         ]
     },
-    "module_name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.utils.utils"
+    "module_name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.utils.main"
 }
 END: Cython Metadata */
 

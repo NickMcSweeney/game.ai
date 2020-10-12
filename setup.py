@@ -15,7 +15,7 @@ extensions = [
         libraries=[],
         library_dirs=[]),
     # rf learner
-    Extension("plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.rf_learner.*", 
+    Extension("plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.rf_learner.learner", 
         ["plugins/SerpentOzymandiasGameAgentPlugin/files/helpers/rf_learner/*.pyx"],
         include_dirs=[],
         libraries=[],

@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "main",
+        "name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.rf_learner.learner",
         "sources": [
             "plugins/SerpentOzymandiasGameAgentPlugin/files/helpers/rf_learner/main.pyx"
         ]
     },
-    "module_name": "main"
+    "module_name": "plugins.SerpentOzymandiasGameAgentPlugin.files.helpers.rf_learner.learner"
 }
 END: Cython Metadata */
 
@@ -965,6 +965,7 @@ static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_main_2[] = "main";
 static const char __pyx_k_module[] = "__module__";
 static const char __pyx_k_Learner[] = "Learner";
+static const char __pyx_k_learner[] = "learner";
 static const char __pyx_k_prepare[] = "__prepare__";
 static const char __pyx_k_qualname[] = "__qualname__";
 static const char __pyx_k_metaclass[] = "__metaclass__";
@@ -987,6 +988,7 @@ static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_doc;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_init;
+static PyObject *__pyx_n_s_learner;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_main_2;
 static PyObject *__pyx_n_s_mem;
@@ -1269,6 +1271,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_doc, __pyx_k_doc, sizeof(__pyx_k_doc), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
+  {&__pyx_n_s_learner, __pyx_k_learner, sizeof(__pyx_k_learner), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_main_2, __pyx_k_main_2, sizeof(__pyx_k_main_2), 0, 0, 1, 1},
   {&__pyx_n_s_mem, __pyx_k_mem, sizeof(__pyx_k_mem), 0, 0, 1, 1},
@@ -1426,7 +1429,7 @@ PyMODINIT_FUNC PyInit_main(void)
   #endif
 
   /* "main.pyx":1
- * from main import Memory, Model             # <<<<<<<<<<<<<<
+ * from learner import Memory, Model             # <<<<<<<<<<<<<<
  * #from memory import Memory
  * #from model import Model
  */
@@ -1438,7 +1441,7 @@ PyMODINIT_FUNC PyInit_main(void)
   __Pyx_INCREF(__pyx_n_s_Model);
   __Pyx_GIVEREF(__pyx_n_s_Model);
   PyList_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_Model);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_main_2, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_learner, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_Memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -1487,7 +1490,7 @@ PyMODINIT_FUNC PyInit_main(void)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "main.pyx":1
- * from main import Memory, Model             # <<<<<<<<<<<<<<
+ * from learner import Memory, Model             # <<<<<<<<<<<<<<
  * #from memory import Memory
  * #from model import Model
  */
