@@ -1,3 +1,11 @@
+import math
+import random
+import numpy as np
+
+MIN_EPSILON = 0
+MAX_EPSILON = 1
+GAMMA = 1
+LAMBDA = 1
 
 class GameRunner:
   def __init__(self, sess, model, env, memory, max_eps, min_eps, decay, render=True):

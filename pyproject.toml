@@ -12,7 +12,7 @@ numpy = "*"
 keras = "^2.3"
 opencv-python = "*"
 tesserocr = "^2.5.1"
-
+tf-agents = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 wheel = "*"
@@ -22,6 +22,7 @@ pytest = "*"
 pytest-cov = "*"
 pytest-benchmark = "*"
 redis = "*"
+gym = "0.10"
 
 [build-system]
 requires = ["poetry>=0.12"]

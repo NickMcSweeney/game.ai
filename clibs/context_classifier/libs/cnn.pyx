@@ -64,6 +64,8 @@ class cclassifier():
       batch_size=batch_size)
     # declare classnames
     self.class_names = self.train_ds.class_names
+    print("class names:")
+    print(self.class_names)
     # Pre Cache data for performance
     self.train_ds = self.train_ds.cache().shuffle(1000).prefetch(buffer_size=self.AUTOTUNE)
     self.val_ds = self.val_ds.cache().prefetch(buffer_size=self.AUTOTUNE)

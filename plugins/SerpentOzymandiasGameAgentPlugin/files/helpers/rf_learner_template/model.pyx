@@ -16,9 +16,8 @@ class Model:
     self._define_model()
 
   def _define_model(self):
-    return
-    self._states = tf.Variable(tf.ones(shape=[None, self._num_states]), dtype=tf.float32)
-    self._q_s_a = tf.Variable(tf.ones(shape=[None, self._num_actions]), dtype=tf.float32)
+    self._states = tf.placeholder(shape=[None, self._num_states], dtype=tf.float32)
+    self._q_s_a = tf.placeholder(shape=[None, self._num_actions], dtype=tf.float32)
     # create a couple of fully connected hidden layers
     fc1 = tf.layers.dense(self._states, 50, activation=tf.nn.relu)
     fc2 = tf.layers.dense(fc1, 50, activation=tf.nn.relu)
@@ -28,13 +27,10 @@ class Model:
     self._var_init = tf.global_variables_initializer()
 
   def predict_one(self, state, sess):
-    return 1
     return sess.run(self._logits, feed_dict={self._states: state.reshape(1, self.num_states)})
 
   def predict_batch(self, states, sess):
-    return 1
     return sess.run(self._logits, feed_dict={self._states: states})
 
   def train_batch(self, sess, x_batch, y_batch):
-    return 1
     sess.run(self._optimizer, feed_dict={self._states: x_batch, self._q_s_a: y_batch})

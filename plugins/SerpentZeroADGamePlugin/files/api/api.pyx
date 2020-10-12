@@ -1,5 +1,6 @@
 from serpent.game_api import GameAPI
 from serpent.input_controller import MouseButton
+from serpent.input_controller import KeyboardKey
 from serpent.sprite import Sprite
 from serpent.sprite_locator import SpriteLocator
 import serpent.cv
@@ -123,6 +124,12 @@ class ZeroADAPI(GameAPI):
         def move_view(cls):
             # move the view screen by a set amount
             api = ZeroADAPI.instance
+
+        @classmethod
+        def select(cls, x, y):
+            # click on coords
+            ZeroADAPI.instance.input_controller.move(x=x, y=y, duration=0.05)
+            ZeroADAPI.instance.input_controller.click(button=MouseButton.LEFT, duration=0.25)
             
         @classmethod
         def make_random_move(cls):
@@ -148,7 +155,6 @@ class ZeroADAPI(GameAPI):
                 api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)
                 api.input_controller.move(x=X, y=Y, duration=0.05)
                 api.input_controller.click_up(button=MouseButton.LEFT, duration=0.25)
-                
             else:
                 # move mouse
                 print("MOVE")
@@ -157,3 +163,74 @@ class ZeroADAPI(GameAPI):
 
                 api.input_controller.move(x=X, y=Y, duration=0.25)
 
+        @classmethod
+        def make_random_unit_move(cls):
+            # make a random mouse movement
+            # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+            api = ZeroADAPI.instance
+            choice = random.randrange(100)
+
+            X = random.random()*api.game.window_geometry["width"]
+            Y = random.random()*api.game.window_geometry["height"]
+
+            api.input_controller.move(x=X, y=Y, duration=0.25)
+            api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)
+            
+        @classmethod
+        def make_random_selection(cls):
+            # make a random mouse movement
+            # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+            api = ZeroADAPI.instance
+            choice = random.randrange(100)
+
+            if(choice < 60):
+                # move mouse
+                print("MOVE")
+                X = random.random()*api.game.window_geometry["width"]
+                Y = random.random()*api.game.window_geometry["height"]
+                api.input_controller.move(x=X, y=Y, duration=0.25)
+                
+                # left click location
+                print("LEFT CLICK")
+                api.input_controller.click(button=MouseButton.LEFT, duration=0.25)
+            else: 
+                # move mouse
+                print("MOVE")
+                X = random.random()*api.game.window_geometry["width"]
+                Y = random.random()*api.game.window_geometry["height"]
+                api.input_controller.move(x=X, y=Y, duration=0.25)
+                
+                # click and drag
+                print("CLICK & DRAG")
+                X = random.random()*api.game.window_geometry["width"]
+                Y = random.random()*api.game.window_geometry["height"]
+
+                api.input_controller.click_down(button=MouseButton.LEFT, duration=0.25)
+                api.input_controller.move(x=X, y=Y, duration=0.05)
+                api.input_controller.click_up(button=MouseButton.LEFT, duration=0.25)
+            
+        @classmethod
+        def make_random_build(cls):
+            # make a random mouse movement
+            # select (a) right click location (b) left click location (c) right click drag (d) move to random location
+            api = ZeroADAPI.instance
+            choice = random.randrange(4)
+
+            keys = [KeyboardKey.KEY_Z,KeyboardKey.KEY_X, KeyboardKey.KEY_C, KeyboardKey.KEY_V]
+            selection = keys[choice]
+            
+            api.input_controller.tap_key(selection)
+
+        @classmethod
+        def clear_selection(cls):
+            #clear selection
+            api = ZeroADAPI.instance
+            #api.input_controller.click(button=MouseButton.RIGHT, duration=0.25)
+            api.input_controller.tap_key(KeyboardKey.KEY_1)
+
+        @classmethod
+        def get_idle_worker(cls):
+            # select worker
+            api = ZeroADAPI.instance
+            api.input_controller.tap_key(KeyboardKey.KEY_PERIOD)
+            
