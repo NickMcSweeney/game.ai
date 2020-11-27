@@ -27,14 +27,5 @@ class Model:
     self._optimizer = tf.train.AdamOptimizer().minimize(loss)
     self._var_init = tf.global_variables_initializer()
 
-  def predict_one(self, state, sess):
-    return 1
+  def predict(self, state, sess):
     return sess.run(self._logits, feed_dict={self._states: state.reshape(1, self.num_states)})
-
-  def predict_batch(self, states, sess):
-    return 1
-    return sess.run(self._logits, feed_dict={self._states: states})
-
-  def train_batch(self, sess, x_batch, y_batch):
-    return 1
-    sess.run(self._optimizer, feed_dict={self._states: x_batch, self._q_s_a: y_batch})

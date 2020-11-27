@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 
     // Set program name to use
     char *programName = "poetry";
- 
+
     // break if invalid args count
     if(argc != 2) {
         printf("incorrect number of args (%d)\n", argc);
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     }
     // save args to variable.
     char const *arg = argv[1];
-    // comandline arguments 
+    // comandline arguments
     char *args[] = {programName, "run", NULL, NULL, NULL, NULL, NULL, NULL};
     char *path;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         args[4] = "build_ext";
         args[5] = "--inplace";
     } else if (strcmp(arg,"--build-api")==0 || strcmp(arg,"-ba")==0) {
-        // Set args to build the pyx files in the Game api library 
+        // Set args to build the pyx files in the Game api library
         printf("building cython files for api library");
         path = "plugins/SerpentZeroADGamePlugin/files/api";
         args[2] = "cythonize";
@@ -81,15 +81,15 @@ int main(int argc, char *argv[]) {
         args[3] = "launch";
         args[4] = "ZeroAD";
     } else if (strcmp(arg,"--play-game")==0 || strcmp(arg,"-p")==0) {
-        // set args to play Zero.AD game, with the game agent 
+        // set args to play Zero.AD game, with the game agent
         printf("playing game with serpent.ai");
         path = "./";
         args[2] = "serpent";
         args[3] = "play";
         args[4] = "ZeroAD";
         args[5] = "SerpentOzymandiasGameAgent";
-    } else if (strcmp(arg,"--capture-frame")==0 || strcmp(arg,"-c")==0) { 
-        // set args to capture game frames of Zero.AD game 
+    } else if (strcmp(arg,"--capture-frame")==0 || strcmp(arg,"-c")==0) {
+        // set args to capture game frames of Zero.AD game
         printf("capturing frames with serpent.ai");
         path = "./";
         args[2] = "serpent";
@@ -97,6 +97,15 @@ int main(int argc, char *argv[]) {
         args[4] = "frame";
         args[5] = "ZeroAD";
         args[6] = "1";
+
+    } else if (strcmp(arg,"--start-redis")==0 || strcmp(arg,"-r")==0) {
+        // start up the redis server for Serpent
+        printf("starting serpent.ai redis server");
+        path = "./";
+        args[2] = "sudo";
+        args[3] = "systemctl";
+        args[4] = "start";
+        args[5] = "redis";
     } else if (strcmp(arg, "-h") == 0) {
         // get the help args and return
         printf("showing poetry help");

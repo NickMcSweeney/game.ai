@@ -806,21 +806,11 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 #define __Pyx_PyObject_GetAttrStr(o,n) PyObject_GetAttr(o,n)
 #endif
 
-/* IncludeStringH.proto */
-#include <string.h>
+/* GetBuiltinName.proto */
+static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
-/* BytesEquals.proto */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* UnicodeEquals.proto */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* StrEquals.proto */
-#if PY_MAJOR_VERSION >= 3
-#define __Pyx_PyString_Equals __Pyx_PyUnicode_Equals
-#else
-#define __Pyx_PyString_Equals __Pyx_PyBytes_Equals
-#endif
+/* GetModuleGlobalName.proto */
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
 
 /* PyCFunctionFastCall.proto */
 #if CYTHON_FAST_PYCCALL
@@ -861,6 +851,40 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
 #else
 #define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
 #endif
+
+/* IncludeStringH.proto */
+#include <string.h>
+
+/* BytesEquals.proto */
+static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* UnicodeEquals.proto */
+static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* StrEquals.proto */
+#if PY_MAJOR_VERSION >= 3
+#define __Pyx_PyString_Equals __Pyx_PyUnicode_Equals
+#else
+#define __Pyx_PyString_Equals __Pyx_PyBytes_Equals
+#endif
+
+/* RaiseTooManyValuesToUnpack.proto */
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
+
+/* RaiseNeedMoreValuesToUnpack.proto */
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
+
+/* IterFinish.proto */
+static CYTHON_INLINE int __Pyx_IterFinish(void);
+
+/* UnpackItemEndCheck.proto */
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
+
+/* Import.proto */
+static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
+
+/* ImportFrom.proto */
+static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
 
 /* FetchCommonType.proto */
 static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type);
@@ -971,52 +995,85 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 int __pyx_module_is_main_SerpentOzymandiasGameAgentPlugin__files__helpers__state_machine__main = 0;
 
 /* Implementation of 'SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main' */
+static const char __pyx_k_np[] = "np";
+static const char __pyx_k_tf[] = "tf";
+static const char __pyx_k_act[] = "act";
 static const char __pyx_k_api[] = "api";
+static const char __pyx_k_cv2[] = "cv2";
 static const char __pyx_k_doc[] = "__doc__";
+static const char __pyx_k_pop[] = "pop";
+static const char __pyx_k_dimX[] = "dimX";
+static const char __pyx_k_dimY[] = "dimY";
+static const char __pyx_k_food[] = "food";
 static const char __pyx_k_init[] = "__init__";
+static const char __pyx_k_iorn[] = "iorn";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_self[] = "self";
 static const char __pyx_k_soul[] = "soul";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_unit[] = "unit";
+static const char __pyx_k_wood[] = "wood";
+static const char __pyx_k_acted[] = "acted";
 static const char __pyx_k_brain[] = "brain";
-static const char __pyx_k_focus[] = "focus";
+static const char __pyx_k_focus[] = "_focus";
+static const char __pyx_k_frame[] = "frame";
 static const char __pyx_k_hands[] = "hands";
 static const char __pyx_k_heart[] = "heart";
+static const char __pyx_k_keras[] = "keras";
+static const char __pyx_k_numpy[] = "numpy";
+static const char __pyx_k_stone[] = "stone";
+static const char __pyx_k_change[] = "change";
+static const char __pyx_k_coordX[] = "coordX";
+static const char __pyx_k_coordY[] = "coordY";
 static const char __pyx_k_create[] = "create";
+static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_module[] = "__module__";
-static const char __pyx_k_focus_2[] = "_focus";
-static const char __pyx_k_ml_unit[] = "ml_unit";
+static const char __pyx_k_points[] = "points";
+static const char __pyx_k_select[] = "select";
+static const char __pyx_k_Learner[] = "Learner";
+static const char __pyx_k_focus_2[] = "focus";
 static const char __pyx_k_prepare[] = "__prepare__";
 static const char __pyx_k_building[] = "building";
-static const char __pyx_k_ml_agent[] = "ml_agent";
-static const char __pyx_k_ml_build[] = "ml_build";
+static const char __pyx_k_classify[] = "classify";
+static const char __pyx_k_feedback[] = "feedback";
 static const char __pyx_k_qualname[] = "__qualname__";
 static const char __pyx_k_free_unit[] = "free_unit";
 static const char __pyx_k_get_focus[] = "get_focus";
 static const char __pyx_k_metaclass[] = "__metaclass__";
 static const char __pyx_k_set_focus[] = "set_focus";
+static const char __pyx_k_Classifier[] = "Classifier";
 static const char __pyx_k_GameAction[] = "GameAction";
+static const char __pyx_k_game_frame[] = "game_frame";
+static const char __pyx_k_get_points[] = "get_points";
+static const char __pyx_k_get_window[] = "get_window";
+static const char __pyx_k_population[] = "population";
+static const char __pyx_k_tensorflow[] = "tensorflow";
 static const char __pyx_k_take_action[] = "take_action";
 static const char __pyx_k_StateMachine[] = "StateMachine";
+static const char __pyx_k_GameInterface[] = "GameInterface";
+static const char __pyx_k_classifier_main[] = "classifier.main";
 static const char __pyx_k_clear_selection[] = "clear_selection";
 static const char __pyx_k_get_idle_worker[] = "get_idle_worker";
+static const char __pyx_k_rf_learner_main[] = "rf_learner.main";
+static const char __pyx_k_focus_classifier[] = "_focus_classifier";
 static const char __pyx_k_make_random_build[] = "make_random_build";
 static const char __pyx_k_StateMachine_focus[] = "StateMachine.focus";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_handle_unit_action[] = "handle_unit_action";
 static const char __pyx_k_StateMachine___init[] = "StateMachine.__init__";
 static const char __pyx_k_StateMachine_create[] = "StateMachine.create";
+static const char __pyx_k_half_resolution_frame[] = "half_resolution_frame";
 static const char __pyx_k_make_random_selection[] = "make_random_selection";
-static const char __pyx_k_make_random_unit_move[] = "make_random_unit_move";
 static const char __pyx_k_StateMachine_get_focus[] = "StateMachine.get_focus";
 static const char __pyx_k_StateMachine_set_focus[] = "StateMachine.set_focus";
 static const char __pyx_k_StateMachine_take_action[] = "StateMachine.take_action";
-static const char __pyx_k_Game_agent_state_machine_interf[] = "\nGame agent state machine\ninterfaces with the ML agent to decide the action to take \n";
 static const char __pyx_k_StateMachine_handle_unit_action[] = "StateMachine.handle_unit_action";
 static const char __pyx_k_SerpentOzymandiasGameAgentPlugin[] = "SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main";
 static const char __pyx_k_plugins_SerpentOzymandiasGameAge[] = "plugins/SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx";
+static PyObject *__pyx_n_s_Classifier;
 static PyObject *__pyx_n_s_GameAction;
+static PyObject *__pyx_n_s_GameInterface;
+static PyObject *__pyx_n_s_Learner;
 static PyObject *__pyx_n_s_SerpentOzymandiasGameAgentPlugin;
 static PyObject *__pyx_n_s_StateMachine;
 static PyObject *__pyx_n_s_StateMachine___init;
@@ -1026,68 +1083,107 @@ static PyObject *__pyx_n_s_StateMachine_get_focus;
 static PyObject *__pyx_n_s_StateMachine_handle_unit_action;
 static PyObject *__pyx_n_s_StateMachine_set_focus;
 static PyObject *__pyx_n_s_StateMachine_take_action;
+static PyObject *__pyx_n_s_act;
+static PyObject *__pyx_n_s_acted;
 static PyObject *__pyx_n_s_api;
 static PyObject *__pyx_n_s_brain;
 static PyObject *__pyx_n_s_building;
+static PyObject *__pyx_n_s_change;
+static PyObject *__pyx_n_s_classifier_main;
+static PyObject *__pyx_n_s_classify;
 static PyObject *__pyx_n_s_clear_selection;
 static PyObject *__pyx_n_s_cline_in_traceback;
+static PyObject *__pyx_n_s_coordX;
+static PyObject *__pyx_n_s_coordY;
 static PyObject *__pyx_n_s_create;
+static PyObject *__pyx_n_s_cv2;
+static PyObject *__pyx_n_s_dimX;
+static PyObject *__pyx_n_s_dimY;
 static PyObject *__pyx_n_s_doc;
+static PyObject *__pyx_n_s_feedback;
 static PyObject *__pyx_n_s_focus;
 static PyObject *__pyx_n_s_focus_2;
+static PyObject *__pyx_n_s_focus_classifier;
+static PyObject *__pyx_n_s_food;
+static PyObject *__pyx_n_s_frame;
 static PyObject *__pyx_n_s_free_unit;
+static PyObject *__pyx_n_s_game_frame;
 static PyObject *__pyx_n_s_get_focus;
 static PyObject *__pyx_n_s_get_idle_worker;
+static PyObject *__pyx_n_s_get_points;
+static PyObject *__pyx_n_s_get_window;
+static PyObject *__pyx_n_s_half_resolution_frame;
 static PyObject *__pyx_n_s_handle_unit_action;
 static PyObject *__pyx_n_s_hands;
 static PyObject *__pyx_n_s_heart;
+static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_init;
+static PyObject *__pyx_n_s_iorn;
+static PyObject *__pyx_n_s_keras;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_make_random_build;
 static PyObject *__pyx_n_s_make_random_selection;
-static PyObject *__pyx_n_s_make_random_unit_move;
 static PyObject *__pyx_n_s_metaclass;
-static PyObject *__pyx_n_s_ml_agent;
-static PyObject *__pyx_n_s_ml_build;
-static PyObject *__pyx_n_s_ml_unit;
 static PyObject *__pyx_n_s_module;
+static PyObject *__pyx_n_s_np;
+static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_kp_s_plugins_SerpentOzymandiasGameAge;
+static PyObject *__pyx_n_s_points;
+static PyObject *__pyx_n_s_pop;
+static PyObject *__pyx_n_s_population;
 static PyObject *__pyx_n_s_prepare;
 static PyObject *__pyx_n_s_qualname;
+static PyObject *__pyx_n_s_rf_learner_main;
+static PyObject *__pyx_n_s_select;
 static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_set_focus;
 static PyObject *__pyx_n_s_soul;
+static PyObject *__pyx_n_s_stone;
 static PyObject *__pyx_n_s_take_action;
+static PyObject *__pyx_n_s_tensorflow;
 static PyObject *__pyx_n_s_test;
+static PyObject *__pyx_n_s_tf;
 static PyObject *__pyx_n_s_unit;
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ml_agent, PyObject *__pyx_v_ml_unit, PyObject *__pyx_v_ml_build, PyObject *__pyx_v_api); /* proto */
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_focus); /* proto */
+static PyObject *__pyx_n_s_wood;
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_api); /* proto */
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_game_frame); /* proto */
 static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_4get_focus(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_6set_focus(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_focus); /* proto */
 static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_8focus(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_10create(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame); /* proto */
+static PyObject *__pyx_int_1;
+static PyObject *__pyx_int_2;
+static PyObject *__pyx_int_3;
+static PyObject *__pyx_int_400;
+static PyObject *__pyx_int_600;
+static PyObject *__pyx_int_240000;
 static PyObject *__pyx_tuple_;
+static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__3;
+static PyObject *__pyx_tuple__4;
 static PyObject *__pyx_tuple__5;
-static PyObject *__pyx_tuple__7;
-static PyObject *__pyx_tuple__9;
-static PyObject *__pyx_tuple__11;
-static PyObject *__pyx_tuple__13;
-static PyObject *__pyx_codeobj__2;
-static PyObject *__pyx_codeobj__4;
-static PyObject *__pyx_codeobj__6;
-static PyObject *__pyx_codeobj__8;
-static PyObject *__pyx_codeobj__10;
-static PyObject *__pyx_codeobj__12;
-static PyObject *__pyx_codeobj__14;
+static PyObject *__pyx_tuple__6;
+static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__12;
+static PyObject *__pyx_tuple__14;
+static PyObject *__pyx_tuple__16;
+static PyObject *__pyx_tuple__18;
+static PyObject *__pyx_codeobj__7;
+static PyObject *__pyx_codeobj__9;
+static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_codeobj__13;
+static PyObject *__pyx_codeobj__15;
+static PyObject *__pyx_codeobj__17;
+static PyObject *__pyx_codeobj__19;
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":7
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
  * """
  * class StateMachine:
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):             # <<<<<<<<<<<<<<
+ *   def __init__(self, api):             # <<<<<<<<<<<<<<
  *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic
+ *     self.hands = api
  */
 
 /* Python wrapper */
@@ -1095,185 +1191,12 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
 static PyMethodDef __pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_1__init__ = {"__init__", (PyCFunction)__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_1__init__, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_1__init__(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_self = 0;
-  PyObject *__pyx_v_ml_agent = 0;
-  PyObject *__pyx_v_ml_unit = 0;
-  PyObject *__pyx_v_ml_build = 0;
   PyObject *__pyx_v_api = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_ml_agent,&__pyx_n_s_ml_unit,&__pyx_n_s_ml_build,&__pyx_n_s_api,0};
-    PyObject* values[5] = {0,0,0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
-        CYTHON_FALLTHROUGH;
-        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-        CYTHON_FALLTHROUGH;
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_ml_agent)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 1); __PYX_ERR(0, 7, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_ml_unit)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 2); __PYX_ERR(0, 7, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  3:
-        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_ml_build)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 3); __PYX_ERR(0, 7, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  4:
-        if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_api)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 4); __PYX_ERR(0, 7, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 7, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
-    }
-    __pyx_v_self = values[0];
-    __pyx_v_ml_agent = values[1];
-    __pyx_v_ml_unit = values[2];
-    __pyx_v_ml_build = values[3];
-    __pyx_v_api = values[4];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 7, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(__pyx_self, __pyx_v_self, __pyx_v_ml_agent, __pyx_v_ml_unit, __pyx_v_ml_build, __pyx_v_api);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ml_agent, PyObject *__pyx_v_ml_unit, PyObject *__pyx_v_ml_build, PyObject *__pyx_v_api) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__init__", 0);
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":9
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):
- *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic             # <<<<<<<<<<<<<<
- *     self.heart = ml_unit # define the ml model to govern unit logic
- *     self.soul = ml_agent # define the ml model to handle overall strategy
- */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_brain, __pyx_v_ml_build) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":10
- *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic
- *     self.heart = ml_unit # define the ml model to govern unit logic             # <<<<<<<<<<<<<<
- *     self.soul = ml_agent # define the ml model to handle overall strategy
- *     self.hands = api
- */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_heart, __pyx_v_ml_unit) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":11
- *     self.brain = ml_build # define the ml model to govern building logic
- *     self.heart = ml_unit # define the ml model to govern unit logic
- *     self.soul = ml_agent # define the ml model to handle overall strategy             # <<<<<<<<<<<<<<
- *     self.hands = api
- * 
- */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_soul, __pyx_v_ml_agent) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":12
- *     self.heart = ml_unit # define the ml model to govern unit logic
- *     self.soul = ml_agent # define the ml model to handle overall strategy
- *     self.hands = api             # <<<<<<<<<<<<<<
- * 
- *     self.free_unit = True
- */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_hands, __pyx_v_api) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":14
- *     self.hands = api
- * 
- *     self.free_unit = True             # <<<<<<<<<<<<<<
- * 
- *   def take_action(self, focus):
- */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_True) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
-
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":7
- * """
- * class StateMachine:
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):             # <<<<<<<<<<<<<<
- *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":16
- *     self.free_unit = True
- * 
- *   def take_action(self, focus):             # <<<<<<<<<<<<<<
- *     # Fuzzy logic for determining the action to take
- *     self._focus = focus
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action = {"take_action", (PyCFunction)__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_self = 0;
-  PyObject *__pyx_v_focus = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("take_action (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_focus,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_api,0};
     PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
@@ -1293,13 +1216,13 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_focus)) != 0)) kw_args--;
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_api)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("take_action", 1, 2, 2, 1); __PYX_ERR(0, 16, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 2, 2, 1); __PYX_ERR(0, 20, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "take_action") < 0)) __PYX_ERR(0, 16, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 20, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -1308,96 +1231,385 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
     __pyx_v_self = values[0];
-    __pyx_v_focus = values[1];
+    __pyx_v_api = values[1];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("take_action", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 16, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 20, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.take_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(__pyx_self, __pyx_v_self, __pyx_v_focus);
+  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(__pyx_self, __pyx_v_self, __pyx_v_api);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_focus) {
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_api) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  int __pyx_t_2;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  __Pyx_RefNannySetupContext("__init__", 0);
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":22
+ *   def __init__(self, api):
+ *     # initialize class
+ *     self.hands = api             # <<<<<<<<<<<<<<
+ *     self._focus_classifier = Classifier()
+ * 
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_hands, __pyx_v_api) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":23
+ *     # initialize class
+ *     self.hands = api
+ *     self._focus_classifier = Classifier()             # <<<<<<<<<<<<<<
+ * 
+ *     # setup rf learners
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_Classifier); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_focus_classifier, __pyx_t_1) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":32
+ *     #print("frame size: %d" % frame_size)
+ * 
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic             # <<<<<<<<<<<<<<
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Learner); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_brain, __pyx_t_2) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":33
+ * 
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic             # <<<<<<<<<<<<<<
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy
+ * 
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_Learner); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_heart, __pyx_t_1) < 0) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":34
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy             # <<<<<<<<<<<<<<
+ * 
+ *     self.free_unit = True
+ */
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_Learner); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_soul, __pyx_t_2) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":36
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy
+ * 
+ *     self.free_unit = True             # <<<<<<<<<<<<<<
+ *     self.acted = False
+ * 
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_True) < 0) __PYX_ERR(0, 36, __pyx_L1_error)
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":37
+ * 
+ *     self.free_unit = True
+ *     self.acted = False             # <<<<<<<<<<<<<<
+ * 
+ *   def take_action(self, game_frame):
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_acted, Py_False) < 0) __PYX_ERR(0, 37, __pyx_L1_error)
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
+ * """
+ * class StateMachine:
+ *   def __init__(self, api):             # <<<<<<<<<<<<<<
+ *     # initialize class
+ *     self.hands = api
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":39
+ *     self.acted = False
+ * 
+ *   def take_action(self, game_frame):             # <<<<<<<<<<<<<<
+ *     # Fuzzy logic for determining the action to take
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action = {"take_action", (PyCFunction)__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_self = 0;
+  PyObject *__pyx_v_game_frame = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("take_action (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_game_frame,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_game_frame)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("take_action", 1, 2, 2, 1); __PYX_ERR(0, 39, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "take_action") < 0)) __PYX_ERR(0, 39, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_self = values[0];
+    __pyx_v_game_frame = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("take_action", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 39, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.take_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(__pyx_self, __pyx_v_self, __pyx_v_game_frame);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_2take_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_game_frame) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
   __Pyx_RefNannySetupContext("take_action", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":18
- *   def take_action(self, focus):
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":41
+ *   def take_action(self, game_frame):
  *     # Fuzzy logic for determining the action to take
- *     self._focus = focus             # <<<<<<<<<<<<<<
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)             # <<<<<<<<<<<<<<
  * 
  *     if(self._focus == "unit"):
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_focus_2, __pyx_v_focus) < 0) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus_classifier); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_classify); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_game_frame, __pyx_n_s_half_resolution_frame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  if (!__pyx_t_4) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      __Pyx_GIVEREF(__pyx_t_2);
+      PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_2);
+      __pyx_t_2 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    }
+  }
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_focus, __pyx_t_1) < 0) __PYX_ERR(0, 41, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
- *     self._focus = focus
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":43
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
  * 
  *     if(self._focus == "unit"):             # <<<<<<<<<<<<<<
  *       # perform unit focus action
- *       self.handle_unit_action()
+ *       self.handle_unit_action(game_frame.half_resolution_frame)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_unit, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_unit, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_2) {
+  if (__pyx_t_6) {
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":22
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":45
  *     if(self._focus == "unit"):
  *       # perform unit focus action
- *       self.handle_unit_action()             # <<<<<<<<<<<<<<
+ *       self.handle_unit_action(game_frame.half_resolution_frame)             # <<<<<<<<<<<<<<
  *       self.hands.GameAction.clear_selection()
  *     elif(self._focus == "building"):
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_handle_unit_action); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_handle_unit_action); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = NULL;
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_game_frame, __pyx_n_s_half_resolution_frame); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_2 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-      if (likely(__pyx_t_4)) {
+      __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_2)) {
         PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(__pyx_t_2);
         __Pyx_INCREF(function);
         __Pyx_DECREF_SET(__pyx_t_3, function);
       }
     }
-    if (__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (!__pyx_t_2) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+      #if CYTHON_FAST_PYCALL
+      if (PyFunction_Check(__pyx_t_3)) {
+        PyObject *__pyx_temp[2] = {__pyx_t_2, __pyx_t_5};
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      } else
+      #endif
+      #if CYTHON_FAST_PYCCALL
+      if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+        PyObject *__pyx_temp[2] = {__pyx_t_2, __pyx_t_5};
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      } else
+      #endif
+      {
+        __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
+        __Pyx_GIVEREF(__pyx_t_5);
+        PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_5);
+        __pyx_t_5 = 0;
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      }
     }
-    __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":23
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":46
  *       # perform unit focus action
- *       self.handle_unit_action()
+ *       self.handle_unit_action(game_frame.half_resolution_frame)
  *       self.hands.GameAction.clear_selection()             # <<<<<<<<<<<<<<
  *     elif(self._focus == "building"):
  *       # perform building focus action
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_clear_selection); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_clear_selection); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -1411,46 +1623,46 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
- *     self._focus = focus
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":43
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
  * 
  *     if(self._focus == "unit"):             # <<<<<<<<<<<<<<
  *       # perform unit focus action
- *       self.handle_unit_action()
+ *       self.handle_unit_action(game_frame.half_resolution_frame)
  */
     goto __pyx_L3;
   }
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":24
- *       self.handle_unit_action()
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+ *       self.handle_unit_action(game_frame.half_resolution_frame)
  *       self.hands.GameAction.clear_selection()
  *     elif(self._focus == "building"):             # <<<<<<<<<<<<<<
  *       # perform building focus action
  *       self.create()
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_building, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_building, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_2) {
+  if (__pyx_t_6) {
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":26
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":49
  *     elif(self._focus == "building"):
  *       # perform building focus action
  *       self.create()             # <<<<<<<<<<<<<<
  *       self.hands.GameAction.clear_selection()
  *     else:
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_create); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_create); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -1463,28 +1675,28 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":27
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":50
  *       # perform building focus action
  *       self.create()
  *       self.hands.GameAction.clear_selection()             # <<<<<<<<<<<<<<
  *     else:
  *       # focus on something
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_clear_selection); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_clear_selection); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -1498,17 +1710,17 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":24
- *       self.handle_unit_action()
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+ *       self.handle_unit_action(game_frame.half_resolution_frame)
  *       self.hands.GameAction.clear_selection()
  *     elif(self._focus == "building"):             # <<<<<<<<<<<<<<
  *       # perform building focus action
@@ -1517,7 +1729,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
     goto __pyx_L3;
   }
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":30
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":53
  *     else:
  *       # focus on something
  *       if (self.free_unit):             # <<<<<<<<<<<<<<
@@ -1525,25 +1737,25 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
  *         self.free_unit = False
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_free_unit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_free_unit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_2) {
+    if (__pyx_t_6) {
 
-      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":31
+      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":54
  *       # focus on something
  *       if (self.free_unit):
  *         self.hands.GameAction.get_idle_worker()             # <<<<<<<<<<<<<<
  *         self.free_unit = False
  *       else:
  */
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_get_idle_worker); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_get_idle_worker); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_4 = NULL;
@@ -1557,25 +1769,25 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":32
+      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":55
  *       if (self.free_unit):
  *         self.hands.GameAction.get_idle_worker()
  *         self.free_unit = False             # <<<<<<<<<<<<<<
  *       else:
  *         self.free_unit = True
  */
-      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_False) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_False) < 0) __PYX_ERR(0, 55, __pyx_L1_error)
 
-      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":30
+      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":53
  *     else:
  *       # focus on something
  *       if (self.free_unit):             # <<<<<<<<<<<<<<
@@ -1585,7 +1797,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
       goto __pyx_L4;
     }
 
-    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":34
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":57
  *         self.free_unit = False
  *       else:
  *         self.free_unit = True             # <<<<<<<<<<<<<<
@@ -1593,16 +1805,16 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
  * 
  */
     /*else*/ {
-      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_True) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
+      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_free_unit, Py_True) < 0) __PYX_ERR(0, 57, __pyx_L1_error)
 
-      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":35
+      /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":58
  *       else:
  *         self.free_unit = True
  *         self.focus()             # <<<<<<<<<<<<<<
  * 
  *   #------ ------ Getter/Setter Functions ------ ------
  */
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 35, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_4 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -1615,10 +1827,10 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -1628,12 +1840,12 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   }
   __pyx_L3:;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":16
- *     self.free_unit = True
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":39
+ *     self.acted = False
  * 
- *   def take_action(self, focus):             # <<<<<<<<<<<<<<
+ *   def take_action(self, game_frame):             # <<<<<<<<<<<<<<
  *     # Fuzzy logic for determining the action to take
- *     self._focus = focus
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
  */
 
   /* function exit code */
@@ -1641,8 +1853,10 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.take_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -1651,7 +1865,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   return __pyx_r;
 }
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":38
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":61
  * 
  *   #------ ------ Getter/Setter Functions ------ ------
  *   def get_focus(self):             # <<<<<<<<<<<<<<
@@ -1679,7 +1893,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_focus", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":40
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":63
  *   def get_focus(self):
  *     # determine what has current focus
  *     return self._focus             # <<<<<<<<<<<<<<
@@ -1687,13 +1901,13 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
  *   def set_focus(self, focus):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_focus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":38
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":61
  * 
  *   #------ ------ Getter/Setter Functions ------ ------
  *   def get_focus(self):             # <<<<<<<<<<<<<<
@@ -1712,7 +1926,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   return __pyx_r;
 }
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":42
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":65
  *     return self._focus
  * 
  *   def set_focus(self, focus):             # <<<<<<<<<<<<<<
@@ -1730,7 +1944,7 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_focus (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_focus,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_focus_2,0};
     PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
@@ -1750,13 +1964,13 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_focus)) != 0)) kw_args--;
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_focus_2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("set_focus", 1, 2, 2, 1); __PYX_ERR(0, 42, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("set_focus", 1, 2, 2, 1); __PYX_ERR(0, 65, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_focus") < 0)) __PYX_ERR(0, 42, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_focus") < 0)) __PYX_ERR(0, 65, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -1769,7 +1983,7 @@ static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_focus", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 42, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_focus", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 65, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.set_focus", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1787,16 +2001,16 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_focus", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":44
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":67
  *   def set_focus(self, focus):
  *     # set the focus
  *     self._focus = focus             # <<<<<<<<<<<<<<
  * 
  *   #------ ------ Action Functions ------ ------
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_focus_2, __pyx_v_focus) < 0) __PYX_ERR(0, 44, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_focus, __pyx_v_focus) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":42
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":65
  *     return self._focus
  * 
  *   def set_focus(self, focus):             # <<<<<<<<<<<<<<
@@ -1816,12 +2030,12 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   return __pyx_r;
 }
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":70
  * 
  *   #------ ------ Action Functions ------ ------
  *   def focus(self):             # <<<<<<<<<<<<<<
  *     # focus on something
- *     self.hands.GameAction.make_random_selection()
+ *     #self.soul.act()
  */
 
 /* Python wrapper */
@@ -1846,19 +2060,19 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("focus", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":49
- *   def focus(self):
- *     # focus on something
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":74
+ *     #self.soul.act()
+ *     #self.hands.GameAction.select(coordX, coordY)
  *     self.hands.GameAction.make_random_selection()             # <<<<<<<<<<<<<<
  * 
  *   def create(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_make_random_selection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_make_random_selection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1872,21 +2086,21 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":70
  * 
  *   #------ ------ Action Functions ------ ------
  *   def focus(self):             # <<<<<<<<<<<<<<
  *     # focus on something
- *     self.hands.GameAction.make_random_selection()
+ *     #self.soul.act()
  */
 
   /* function exit code */
@@ -1904,7 +2118,7 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   return __pyx_r;
 }
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":51
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":76
  *     self.hands.GameAction.make_random_selection()
  * 
  *   def create(self):             # <<<<<<<<<<<<<<
@@ -1934,19 +2148,19 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("create", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":53
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":78
  *   def create(self):
  *     # create unit or research tech at building
  *     self.hands.GameAction.make_random_build()             # <<<<<<<<<<<<<<
  * 
- *   def handle_unit_action(self):
+ *   def handle_unit_action(self, frame):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_make_random_build); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_make_random_build); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1960,16 +2174,16 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":51
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":76
  *     self.hands.GameAction.make_random_selection()
  * 
  *   def create(self):             # <<<<<<<<<<<<<<
@@ -1992,73 +2206,613 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   return __pyx_r;
 }
 
-/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":55
+/* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":80
  *     self.hands.GameAction.make_random_build()
  * 
- *   def handle_unit_action(self):             # <<<<<<<<<<<<<<
+ *   def handle_unit_action(self, frame):             # <<<<<<<<<<<<<<
  *     # handle the decision for unit
  *     # (A) go to point (B) build at point
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action(PyObject *__pyx_self, PyObject *__pyx_v_self); /*proto*/
-static PyMethodDef __pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action = {"handle_unit_action", (PyCFunction)__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action, METH_O, 0};
-static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action(PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action = {"handle_unit_action", (PyCFunction)__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_self = 0;
+  PyObject *__pyx_v_frame = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("handle_unit_action (wrapper)", 0);
-  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(__pyx_self, ((PyObject *)__pyx_v_self));
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_frame,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_frame)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("handle_unit_action", 1, 2, 2, 1); __PYX_ERR(0, 80, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "handle_unit_action") < 0)) __PYX_ERR(0, 80, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_self = values[0];
+    __pyx_v_frame = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("handle_unit_action", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 80, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.handle_unit_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(__pyx_self, __pyx_v_self, __pyx_v_frame);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_12handle_unit_action(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame) {
+  PyObject *__pyx_v_points = NULL;
+  PyObject *__pyx_v_food = NULL;
+  PyObject *__pyx_v_wood = NULL;
+  PyObject *__pyx_v_stone = NULL;
+  PyObject *__pyx_v_iorn = NULL;
+  PyObject *__pyx_v_pop = NULL;
+  PyObject *__pyx_v_coordX = NULL;
+  PyObject *__pyx_v_coordY = NULL;
+  PyObject *__pyx_v_dimX = NULL;
+  PyObject *__pyx_v_dimY = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_5;
+  PyObject *__pyx_t_6 = NULL;
+  PyObject *(*__pyx_t_7)(PyObject *);
   __Pyx_RefNannySetupContext("handle_unit_action", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":58
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":83
  *     # handle the decision for unit
  *     # (A) go to point (B) build at point
- *     self.hands.GameAction.make_random_unit_move()             # <<<<<<<<<<<<<<
+ *     if (self.acted):             # <<<<<<<<<<<<<<
+ *       # give feedback to agent
+ *       # get points
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_make_random_unit_move); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-    }
-  }
-  if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
-  }
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_acted); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_2) {
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":55
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":86
+ *       # give feedback to agent
+ *       # get points
+ *       points = self.hands.GameInterface.get_points()             # <<<<<<<<<<<<<<
+ *       food = abs(points["food"]["change"])
+ *       wood = abs(points["wood"]["change"])
+ */
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_GameInterface); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_get_points); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_3, function);
+      }
+    }
+    if (__pyx_t_4) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    } else {
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_points = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":87
+ *       # get points
+ *       points = self.hands.GameInterface.get_points()
+ *       food = abs(points["food"]["change"])             # <<<<<<<<<<<<<<
+ *       wood = abs(points["wood"]["change"])
+ *       stone = abs(points["stone"]["change"])
+ */
+    __pyx_t_1 = PyObject_GetItem(__pyx_v_points, __pyx_n_s_food); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_change); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 87, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_food = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":88
+ *       points = self.hands.GameInterface.get_points()
+ *       food = abs(points["food"]["change"])
+ *       wood = abs(points["wood"]["change"])             # <<<<<<<<<<<<<<
+ *       stone = abs(points["stone"]["change"])
+ *       iorn = abs(points["iorn"]["change"])
+ */
+    __pyx_t_1 = PyObject_GetItem(__pyx_v_points, __pyx_n_s_wood); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_change); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_wood = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":89
+ *       food = abs(points["food"]["change"])
+ *       wood = abs(points["wood"]["change"])
+ *       stone = abs(points["stone"]["change"])             # <<<<<<<<<<<<<<
+ *       iorn = abs(points["iorn"]["change"])
+ *       pop = abs(points["population"]["change"])
+ */
+    __pyx_t_1 = PyObject_GetItem(__pyx_v_points, __pyx_n_s_stone); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_change); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 89, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_stone = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":90
+ *       wood = abs(points["wood"]["change"])
+ *       stone = abs(points["stone"]["change"])
+ *       iorn = abs(points["iorn"]["change"])             # <<<<<<<<<<<<<<
+ *       pop = abs(points["population"]["change"])
+ *       self.heart.feedback(food,wood,stone,iorn,pop)
+ */
+    __pyx_t_1 = PyObject_GetItem(__pyx_v_points, __pyx_n_s_iorn); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_change); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_iorn = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":91
+ *       stone = abs(points["stone"]["change"])
+ *       iorn = abs(points["iorn"]["change"])
+ *       pop = abs(points["population"]["change"])             # <<<<<<<<<<<<<<
+ *       self.heart.feedback(food,wood,stone,iorn,pop)
+ *       self.acted = False
+ */
+    __pyx_t_1 = PyObject_GetItem(__pyx_v_points, __pyx_n_s_population); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_1, __pyx_n_s_change); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_pop = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":92
+ *       iorn = abs(points["iorn"]["change"])
+ *       pop = abs(points["population"]["change"])
+ *       self.heart.feedback(food,wood,stone,iorn,pop)             # <<<<<<<<<<<<<<
+ *       self.acted = False
+ *     else:
+ */
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_heart); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_feedback); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = NULL;
+    __pyx_t_5 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_4);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_4, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_4)) {
+      PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_v_food, __pyx_v_wood, __pyx_v_stone, __pyx_v_iorn, __pyx_v_pop};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
+      PyObject *__pyx_temp[6] = {__pyx_t_3, __pyx_v_food, __pyx_v_wood, __pyx_v_stone, __pyx_v_iorn, __pyx_v_pop};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 5+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+    } else
+    #endif
+    {
+      __pyx_t_6 = PyTuple_New(5+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 92, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      if (__pyx_t_3) {
+        __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3); __pyx_t_3 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_food);
+      __Pyx_GIVEREF(__pyx_v_food);
+      PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_5, __pyx_v_food);
+      __Pyx_INCREF(__pyx_v_wood);
+      __Pyx_GIVEREF(__pyx_v_wood);
+      PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_wood);
+      __Pyx_INCREF(__pyx_v_stone);
+      __Pyx_GIVEREF(__pyx_v_stone);
+      PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_5, __pyx_v_stone);
+      __Pyx_INCREF(__pyx_v_iorn);
+      __Pyx_GIVEREF(__pyx_v_iorn);
+      PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_v_iorn);
+      __Pyx_INCREF(__pyx_v_pop);
+      __Pyx_GIVEREF(__pyx_v_pop);
+      PyTuple_SET_ITEM(__pyx_t_6, 4+__pyx_t_5, __pyx_v_pop);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":93
+ *       pop = abs(points["population"]["change"])
+ *       self.heart.feedback(food,wood,stone,iorn,pop)
+ *       self.acted = False             # <<<<<<<<<<<<<<
+ *     else:
+ *       # get action from agent
+ */
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_acted, Py_False) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":83
+ *     # handle the decision for unit
+ *     # (A) go to point (B) build at point
+ *     if (self.acted):             # <<<<<<<<<<<<<<
+ *       # give feedback to agent
+ *       # get points
+ */
+    goto __pyx_L3;
+  }
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":96
+ *     else:
+ *       # get action from agent
+ *       (coordX, coordY) = self.heart.act(frame)             # <<<<<<<<<<<<<<
+ *       (dimX, dimY) = self.hands.get_window()
+ *       (coordX, coordY) = (coordX*dimX, coordY*dimY)
+ */
+  /*else*/ {
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_heart); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_act); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_6, function);
+      }
+    }
+    if (!__pyx_t_4) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_frame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+    } else {
+      #if CYTHON_FAST_PYCALL
+      if (PyFunction_Check(__pyx_t_6)) {
+        PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_frame};
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __Pyx_GOTREF(__pyx_t_1);
+      } else
+      #endif
+      #if CYTHON_FAST_PYCCALL
+      if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
+        PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_frame};
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __Pyx_GOTREF(__pyx_t_1);
+      } else
+      #endif
+      {
+        __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+        __Pyx_INCREF(__pyx_v_frame);
+        __Pyx_GIVEREF(__pyx_v_frame);
+        PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_frame);
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      }
+    }
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
+      PyObject* sequence = __pyx_t_1;
+      #if !CYTHON_COMPILING_IN_PYPY
+      Py_ssize_t size = Py_SIZE(sequence);
+      #else
+      Py_ssize_t size = PySequence_Size(sequence);
+      #endif
+      if (unlikely(size != 2)) {
+        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
+        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
+        __PYX_ERR(0, 96, __pyx_L1_error)
+      }
+      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+      if (likely(PyTuple_CheckExact(sequence))) {
+        __pyx_t_6 = PyTuple_GET_ITEM(sequence, 0); 
+        __pyx_t_3 = PyTuple_GET_ITEM(sequence, 1); 
+      } else {
+        __pyx_t_6 = PyList_GET_ITEM(sequence, 0); 
+        __pyx_t_3 = PyList_GET_ITEM(sequence, 1); 
+      }
+      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_3);
+      #else
+      __pyx_t_6 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else {
+      Py_ssize_t index = -1;
+      __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext;
+      index = 0; __pyx_t_6 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_6)) goto __pyx_L4_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_6);
+      index = 1; __pyx_t_3 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L4_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_3);
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_4), 2) < 0) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_7 = NULL;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      goto __pyx_L5_unpacking_done;
+      __pyx_L4_unpacking_failed:;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_7 = NULL;
+      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
+      __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_L5_unpacking_done:;
+    }
+    __pyx_v_coordX = __pyx_t_6;
+    __pyx_t_6 = 0;
+    __pyx_v_coordY = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":97
+ *       # get action from agent
+ *       (coordX, coordY) = self.heart.act(frame)
+ *       (dimX, dimY) = self.hands.get_window()             # <<<<<<<<<<<<<<
+ *       (coordX, coordY) = (coordX*dimX, coordY*dimY)
+ *       self.hands.GameAction.select(coordX, coordY)
+ */
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_get_window); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_6);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_6, function);
+      }
+    }
+    if (__pyx_t_3) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    } else {
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+    }
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
+      PyObject* sequence = __pyx_t_1;
+      #if !CYTHON_COMPILING_IN_PYPY
+      Py_ssize_t size = Py_SIZE(sequence);
+      #else
+      Py_ssize_t size = PySequence_Size(sequence);
+      #endif
+      if (unlikely(size != 2)) {
+        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
+        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
+        __PYX_ERR(0, 97, __pyx_L1_error)
+      }
+      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+      if (likely(PyTuple_CheckExact(sequence))) {
+        __pyx_t_6 = PyTuple_GET_ITEM(sequence, 0); 
+        __pyx_t_3 = PyTuple_GET_ITEM(sequence, 1); 
+      } else {
+        __pyx_t_6 = PyList_GET_ITEM(sequence, 0); 
+        __pyx_t_3 = PyList_GET_ITEM(sequence, 1); 
+      }
+      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_3);
+      #else
+      __pyx_t_6 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 97, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else {
+      Py_ssize_t index = -1;
+      __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 97, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext;
+      index = 0; __pyx_t_6 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_6)) goto __pyx_L6_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_6);
+      index = 1; __pyx_t_3 = __pyx_t_7(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L6_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_3);
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_4), 2) < 0) __PYX_ERR(0, 97, __pyx_L1_error)
+      __pyx_t_7 = NULL;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      goto __pyx_L7_unpacking_done;
+      __pyx_L6_unpacking_failed:;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_7 = NULL;
+      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
+      __PYX_ERR(0, 97, __pyx_L1_error)
+      __pyx_L7_unpacking_done:;
+    }
+    __pyx_v_dimX = __pyx_t_6;
+    __pyx_t_6 = 0;
+    __pyx_v_dimY = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":98
+ *       (coordX, coordY) = self.heart.act(frame)
+ *       (dimX, dimY) = self.hands.get_window()
+ *       (coordX, coordY) = (coordX*dimX, coordY*dimY)             # <<<<<<<<<<<<<<
+ *       self.hands.GameAction.select(coordX, coordY)
+ * 
+ */
+    __pyx_t_1 = PyNumber_Multiply(__pyx_v_coordX, __pyx_v_dimX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = PyNumber_Multiply(__pyx_v_coordY, __pyx_v_dimY); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF_SET(__pyx_v_coordX, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __Pyx_DECREF_SET(__pyx_v_coordY, __pyx_t_3);
+    __pyx_t_3 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":99
+ *       (dimX, dimY) = self.hands.get_window()
+ *       (coordX, coordY) = (coordX*dimX, coordY*dimY)
+ *       self.hands.GameAction.select(coordX, coordY)             # <<<<<<<<<<<<<<
+ * 
+ *       self.acted = True
+ */
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_hands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_GameAction); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 99, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_select); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_6 = NULL;
+    __pyx_t_5 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_6)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_6);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_1)) {
+      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_v_coordX, __pyx_v_coordY};
+      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_GOTREF(__pyx_t_3);
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
+      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_v_coordX, __pyx_v_coordY};
+      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_GOTREF(__pyx_t_3);
+    } else
+    #endif
+    {
+      __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 99, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      if (__pyx_t_6) {
+        __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_6); __pyx_t_6 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_coordX);
+      __Pyx_GIVEREF(__pyx_v_coordX);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_5, __pyx_v_coordX);
+      __Pyx_INCREF(__pyx_v_coordY);
+      __Pyx_GIVEREF(__pyx_v_coordY);
+      PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_v_coordY);
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+    /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":101
+ *       self.hands.GameAction.select(coordX, coordY)
+ * 
+ *       self.acted = True             # <<<<<<<<<<<<<<
+ * 
+ *     #self.hands.GameAction.make_random_unit_move()
+ */
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_acted, Py_True) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
+  }
+  __pyx_L3:;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":80
  *     self.hands.GameAction.make_random_build()
  * 
- *   def handle_unit_action(self):             # <<<<<<<<<<<<<<
+ *   def handle_unit_action(self, frame):             # <<<<<<<<<<<<<<
  *     # handle the decision for unit
  *     # (A) go to point (B) build at point
  */
@@ -2068,11 +2822,22 @@ static PyObject *__pyx_pf_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13s
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main.StateMachine.handle_unit_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_points);
+  __Pyx_XDECREF(__pyx_v_food);
+  __Pyx_XDECREF(__pyx_v_wood);
+  __Pyx_XDECREF(__pyx_v_stone);
+  __Pyx_XDECREF(__pyx_v_iorn);
+  __Pyx_XDECREF(__pyx_v_pop);
+  __Pyx_XDECREF(__pyx_v_coordX);
+  __Pyx_XDECREF(__pyx_v_coordY);
+  __Pyx_XDECREF(__pyx_v_dimX);
+  __Pyx_XDECREF(__pyx_v_dimY);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -2090,7 +2855,7 @@ static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
   #endif
     "main",
-    __pyx_k_Game_agent_state_machine_interf, /* m_doc */
+    0, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
     NULL, /* m_reload */
@@ -2101,7 +2866,10 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_Classifier, __pyx_k_Classifier, sizeof(__pyx_k_Classifier), 0, 0, 1, 1},
   {&__pyx_n_s_GameAction, __pyx_k_GameAction, sizeof(__pyx_k_GameAction), 0, 0, 1, 1},
+  {&__pyx_n_s_GameInterface, __pyx_k_GameInterface, sizeof(__pyx_k_GameInterface), 0, 0, 1, 1},
+  {&__pyx_n_s_Learner, __pyx_k_Learner, sizeof(__pyx_k_Learner), 0, 0, 1, 1},
   {&__pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_k_SerpentOzymandiasGameAgentPlugin, sizeof(__pyx_k_SerpentOzymandiasGameAgentPlugin), 0, 0, 1, 1},
   {&__pyx_n_s_StateMachine, __pyx_k_StateMachine, sizeof(__pyx_k_StateMachine), 0, 0, 1, 1},
   {&__pyx_n_s_StateMachine___init, __pyx_k_StateMachine___init, sizeof(__pyx_k_StateMachine___init), 0, 0, 1, 1},
@@ -2111,40 +2879,68 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_StateMachine_handle_unit_action, __pyx_k_StateMachine_handle_unit_action, sizeof(__pyx_k_StateMachine_handle_unit_action), 0, 0, 1, 1},
   {&__pyx_n_s_StateMachine_set_focus, __pyx_k_StateMachine_set_focus, sizeof(__pyx_k_StateMachine_set_focus), 0, 0, 1, 1},
   {&__pyx_n_s_StateMachine_take_action, __pyx_k_StateMachine_take_action, sizeof(__pyx_k_StateMachine_take_action), 0, 0, 1, 1},
+  {&__pyx_n_s_act, __pyx_k_act, sizeof(__pyx_k_act), 0, 0, 1, 1},
+  {&__pyx_n_s_acted, __pyx_k_acted, sizeof(__pyx_k_acted), 0, 0, 1, 1},
   {&__pyx_n_s_api, __pyx_k_api, sizeof(__pyx_k_api), 0, 0, 1, 1},
   {&__pyx_n_s_brain, __pyx_k_brain, sizeof(__pyx_k_brain), 0, 0, 1, 1},
   {&__pyx_n_s_building, __pyx_k_building, sizeof(__pyx_k_building), 0, 0, 1, 1},
+  {&__pyx_n_s_change, __pyx_k_change, sizeof(__pyx_k_change), 0, 0, 1, 1},
+  {&__pyx_n_s_classifier_main, __pyx_k_classifier_main, sizeof(__pyx_k_classifier_main), 0, 0, 1, 1},
+  {&__pyx_n_s_classify, __pyx_k_classify, sizeof(__pyx_k_classify), 0, 0, 1, 1},
   {&__pyx_n_s_clear_selection, __pyx_k_clear_selection, sizeof(__pyx_k_clear_selection), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
+  {&__pyx_n_s_coordX, __pyx_k_coordX, sizeof(__pyx_k_coordX), 0, 0, 1, 1},
+  {&__pyx_n_s_coordY, __pyx_k_coordY, sizeof(__pyx_k_coordY), 0, 0, 1, 1},
   {&__pyx_n_s_create, __pyx_k_create, sizeof(__pyx_k_create), 0, 0, 1, 1},
+  {&__pyx_n_s_cv2, __pyx_k_cv2, sizeof(__pyx_k_cv2), 0, 0, 1, 1},
+  {&__pyx_n_s_dimX, __pyx_k_dimX, sizeof(__pyx_k_dimX), 0, 0, 1, 1},
+  {&__pyx_n_s_dimY, __pyx_k_dimY, sizeof(__pyx_k_dimY), 0, 0, 1, 1},
   {&__pyx_n_s_doc, __pyx_k_doc, sizeof(__pyx_k_doc), 0, 0, 1, 1},
+  {&__pyx_n_s_feedback, __pyx_k_feedback, sizeof(__pyx_k_feedback), 0, 0, 1, 1},
   {&__pyx_n_s_focus, __pyx_k_focus, sizeof(__pyx_k_focus), 0, 0, 1, 1},
   {&__pyx_n_s_focus_2, __pyx_k_focus_2, sizeof(__pyx_k_focus_2), 0, 0, 1, 1},
+  {&__pyx_n_s_focus_classifier, __pyx_k_focus_classifier, sizeof(__pyx_k_focus_classifier), 0, 0, 1, 1},
+  {&__pyx_n_s_food, __pyx_k_food, sizeof(__pyx_k_food), 0, 0, 1, 1},
+  {&__pyx_n_s_frame, __pyx_k_frame, sizeof(__pyx_k_frame), 0, 0, 1, 1},
   {&__pyx_n_s_free_unit, __pyx_k_free_unit, sizeof(__pyx_k_free_unit), 0, 0, 1, 1},
+  {&__pyx_n_s_game_frame, __pyx_k_game_frame, sizeof(__pyx_k_game_frame), 0, 0, 1, 1},
   {&__pyx_n_s_get_focus, __pyx_k_get_focus, sizeof(__pyx_k_get_focus), 0, 0, 1, 1},
   {&__pyx_n_s_get_idle_worker, __pyx_k_get_idle_worker, sizeof(__pyx_k_get_idle_worker), 0, 0, 1, 1},
+  {&__pyx_n_s_get_points, __pyx_k_get_points, sizeof(__pyx_k_get_points), 0, 0, 1, 1},
+  {&__pyx_n_s_get_window, __pyx_k_get_window, sizeof(__pyx_k_get_window), 0, 0, 1, 1},
+  {&__pyx_n_s_half_resolution_frame, __pyx_k_half_resolution_frame, sizeof(__pyx_k_half_resolution_frame), 0, 0, 1, 1},
   {&__pyx_n_s_handle_unit_action, __pyx_k_handle_unit_action, sizeof(__pyx_k_handle_unit_action), 0, 0, 1, 1},
   {&__pyx_n_s_hands, __pyx_k_hands, sizeof(__pyx_k_hands), 0, 0, 1, 1},
   {&__pyx_n_s_heart, __pyx_k_heart, sizeof(__pyx_k_heart), 0, 0, 1, 1},
+  {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
+  {&__pyx_n_s_iorn, __pyx_k_iorn, sizeof(__pyx_k_iorn), 0, 0, 1, 1},
+  {&__pyx_n_s_keras, __pyx_k_keras, sizeof(__pyx_k_keras), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_make_random_build, __pyx_k_make_random_build, sizeof(__pyx_k_make_random_build), 0, 0, 1, 1},
   {&__pyx_n_s_make_random_selection, __pyx_k_make_random_selection, sizeof(__pyx_k_make_random_selection), 0, 0, 1, 1},
-  {&__pyx_n_s_make_random_unit_move, __pyx_k_make_random_unit_move, sizeof(__pyx_k_make_random_unit_move), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
-  {&__pyx_n_s_ml_agent, __pyx_k_ml_agent, sizeof(__pyx_k_ml_agent), 0, 0, 1, 1},
-  {&__pyx_n_s_ml_build, __pyx_k_ml_build, sizeof(__pyx_k_ml_build), 0, 0, 1, 1},
-  {&__pyx_n_s_ml_unit, __pyx_k_ml_unit, sizeof(__pyx_k_ml_unit), 0, 0, 1, 1},
   {&__pyx_n_s_module, __pyx_k_module, sizeof(__pyx_k_module), 0, 0, 1, 1},
+  {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
+  {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
   {&__pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_k_plugins_SerpentOzymandiasGameAge, sizeof(__pyx_k_plugins_SerpentOzymandiasGameAge), 0, 0, 1, 0},
+  {&__pyx_n_s_points, __pyx_k_points, sizeof(__pyx_k_points), 0, 0, 1, 1},
+  {&__pyx_n_s_pop, __pyx_k_pop, sizeof(__pyx_k_pop), 0, 0, 1, 1},
+  {&__pyx_n_s_population, __pyx_k_population, sizeof(__pyx_k_population), 0, 0, 1, 1},
   {&__pyx_n_s_prepare, __pyx_k_prepare, sizeof(__pyx_k_prepare), 0, 0, 1, 1},
   {&__pyx_n_s_qualname, __pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 0, 1, 1},
+  {&__pyx_n_s_rf_learner_main, __pyx_k_rf_learner_main, sizeof(__pyx_k_rf_learner_main), 0, 0, 1, 1},
+  {&__pyx_n_s_select, __pyx_k_select, sizeof(__pyx_k_select), 0, 0, 1, 1},
   {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_set_focus, __pyx_k_set_focus, sizeof(__pyx_k_set_focus), 0, 0, 1, 1},
   {&__pyx_n_s_soul, __pyx_k_soul, sizeof(__pyx_k_soul), 0, 0, 1, 1},
+  {&__pyx_n_s_stone, __pyx_k_stone, sizeof(__pyx_k_stone), 0, 0, 1, 1},
   {&__pyx_n_s_take_action, __pyx_k_take_action, sizeof(__pyx_k_take_action), 0, 0, 1, 1},
+  {&__pyx_n_s_tensorflow, __pyx_k_tensorflow, sizeof(__pyx_k_tensorflow), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
+  {&__pyx_n_s_tf, __pyx_k_tf, sizeof(__pyx_k_tf), 0, 0, 1, 1},
   {&__pyx_n_s_unit, __pyx_k_unit, sizeof(__pyx_k_unit), 0, 0, 1, 1},
+  {&__pyx_n_s_wood, __pyx_k_wood, sizeof(__pyx_k_wood), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
@@ -2155,89 +2951,128 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":7
- * """
- * class StateMachine:
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):             # <<<<<<<<<<<<<<
- *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":32
+ *     #print("frame size: %d" % frame_size)
+ * 
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic             # <<<<<<<<<<<<<<
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy
  */
-  __pyx_tuple_ = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_ml_agent, __pyx_n_s_ml_unit, __pyx_n_s_ml_build, __pyx_n_s_api); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(3, __pyx_int_240000, __pyx_int_2, __pyx_int_1); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_init, 7, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 7, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":16
- *     self.free_unit = True
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":33
  * 
- *   def take_action(self, focus):             # <<<<<<<<<<<<<<
- *     # Fuzzy logic for determining the action to take
- *     self._focus = focus
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic             # <<<<<<<<<<<<<<
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy
+ * 
  */
-  __pyx_tuple__3 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_focus); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(2, __pyx_int_600, __pyx_int_400); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__2);
+  __Pyx_GIVEREF(__pyx_tuple__2);
+  __pyx_tuple__3 = PyTuple_Pack(2, __pyx_int_1, __pyx_int_1); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
-  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_take_action, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(3, __pyx_tuple__2, __pyx_tuple__3, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":38
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":34
+ *     self.brain = Learner(600*400, 2, 1) # define the ml model to govern building logic
+ *     self.heart = Learner((600,400), (1,1), 1) # define the ml model to govern unit logic
+ *     self.soul = Learner(3, 3, 1) # define the ml model to handle overall strategy             # <<<<<<<<<<<<<<
+ * 
+ *     self.free_unit = True
+ */
+  __pyx_tuple__5 = PyTuple_Pack(3, __pyx_int_3, __pyx_int_3, __pyx_int_1); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
+ * """
+ * class StateMachine:
+ *   def __init__(self, api):             # <<<<<<<<<<<<<<
+ *     # initialize class
+ *     self.hands = api
+ */
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_api); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_init, 20, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 20, __pyx_L1_error)
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":39
+ *     self.acted = False
+ * 
+ *   def take_action(self, game_frame):             # <<<<<<<<<<<<<<
+ *     # Fuzzy logic for determining the action to take
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
+ */
+  __pyx_tuple__8 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_game_frame); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_take_action, 39, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 39, __pyx_L1_error)
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":61
  * 
  *   #------ ------ Getter/Setter Functions ------ ------
  *   def get_focus(self):             # <<<<<<<<<<<<<<
  *     # determine what has current focus
  *     return self._focus
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
-  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_get_focus, 38, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_get_focus, 61, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(0, 61, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":42
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":65
  *     return self._focus
  * 
  *   def set_focus(self, focus):             # <<<<<<<<<<<<<<
  *     # set the focus
  *     self._focus = focus
  */
-  __pyx_tuple__7 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_focus); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 42, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_set_focus, 42, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 42, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_focus_2); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_set_focus, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 65, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":70
  * 
  *   #------ ------ Action Functions ------ ------
  *   def focus(self):             # <<<<<<<<<<<<<<
  *     # focus on something
- *     self.hands.GameAction.make_random_selection()
+ *     #self.soul.act()
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__9);
-  __Pyx_GIVEREF(__pyx_tuple__9);
-  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_focus, 47, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_focus_2, 70, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 70, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":51
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":76
  *     self.hands.GameAction.make_random_selection()
  * 
  *   def create(self):             # <<<<<<<<<<<<<<
  *     # create unit or research tech at building
  *     self.hands.GameAction.make_random_build()
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 51, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_create, 51, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_create, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 76, __pyx_L1_error)
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":55
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":80
  *     self.hands.GameAction.make_random_build()
  * 
- *   def handle_unit_action(self):             # <<<<<<<<<<<<<<
+ *   def handle_unit_action(self, frame):             # <<<<<<<<<<<<<<
  *     # handle the decision for unit
  *     # (A) go to point (B) build at point
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 55, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
-  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_handle_unit_action, 55, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_tuple__18 = PyTuple_Pack(12, __pyx_n_s_self, __pyx_n_s_frame, __pyx_n_s_points, __pyx_n_s_food, __pyx_n_s_wood, __pyx_n_s_stone, __pyx_n_s_iorn, __pyx_n_s_pop, __pyx_n_s_coordX, __pyx_n_s_coordY, __pyx_n_s_dimX, __pyx_n_s_dimY); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(2, 0, 12, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_plugins_SerpentOzymandiasGameAge, __pyx_n_s_handle_unit_action, 80, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2246,7 +3081,13 @@ static int __Pyx_InitCachedConstants(void) {
 }
 
 static int __Pyx_InitGlobals(void) {
-  if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 2, __pyx_L1_error);
+  if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_400 = PyInt_FromLong(400); if (unlikely(!__pyx_int_400)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_600 = PyInt_FromLong(600); if (unlikely(!__pyx_int_600)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_240000 = PyInt_FromLong(240000L); if (unlikely(!__pyx_int_240000)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2273,24 +3114,24 @@ PyMODINIT_FUNC PyInit_main(void)
   }
   #endif
   __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_main(void)", 0);
-  if (__Pyx_check_binary_version() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
-  __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) __PYX_ERR(0, 2, __pyx_L1_error)
-  __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) __PYX_ERR(0, 2, __pyx_L1_error)
-  __pyx_empty_unicode = PyUnicode_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_unicode)) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_check_binary_version() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_empty_unicode = PyUnicode_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_unicode)) __PYX_ERR(0, 1, __pyx_L1_error)
   #ifdef __Pyx_CyFunction_USED
-  if (__pyx_CyFunction_init() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__pyx_CyFunction_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_FusedFunction_USED
-  if (__pyx_FusedFunction_init() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__pyx_FusedFunction_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_Coroutine_USED
-  if (__pyx_Coroutine_init() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__pyx_Coroutine_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_Generator_USED
-  if (__pyx_Generator_init() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__pyx_Generator_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_StopAsyncIteration_USED
-  if (__pyx_StopAsyncIteration_init() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__pyx_StopAsyncIteration_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   /*--- Library function declarations ---*/
   /*--- Threads initialization code ---*/
@@ -2301,39 +3142,39 @@ PyMODINIT_FUNC PyInit_main(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("main", __pyx_methods, __pyx_k_Game_agent_state_machine_interf, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("main", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
-  if (unlikely(!__pyx_m)) __PYX_ERR(0, 2, __pyx_L1_error)
-  __pyx_d = PyModule_GetDict(__pyx_m); if (unlikely(!__pyx_d)) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (unlikely(!__pyx_m)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_d = PyModule_GetDict(__pyx_m); if (unlikely(!__pyx_d)) __PYX_ERR(0, 1, __pyx_L1_error)
   Py_INCREF(__pyx_d);
-  __pyx_b = PyImport_AddModule(__Pyx_BUILTIN_MODULE_NAME); if (unlikely(!__pyx_b)) __PYX_ERR(0, 2, __pyx_L1_error)
-  __pyx_cython_runtime = PyImport_AddModule((char *) "cython_runtime"); if (unlikely(!__pyx_cython_runtime)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_b = PyImport_AddModule(__Pyx_BUILTIN_MODULE_NAME); if (unlikely(!__pyx_b)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_cython_runtime = PyImport_AddModule((char *) "cython_runtime"); if (unlikely(!__pyx_cython_runtime)) __PYX_ERR(0, 1, __pyx_L1_error)
   #if CYTHON_COMPILING_IN_PYPY
   Py_INCREF(__pyx_b);
   #endif
-  if (PyObject_SetAttrString(__pyx_m, "__builtins__", __pyx_b) < 0) __PYX_ERR(0, 2, __pyx_L1_error);
+  if (PyObject_SetAttrString(__pyx_m, "__builtins__", __pyx_b) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   /*--- Initialize various global constants etc. ---*/
-  if (__Pyx_InitGlobals() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_InitGlobals() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
-  if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
   if (__pyx_module_is_main_SerpentOzymandiasGameAgentPlugin__files__helpers__state_machine__main) {
-    if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+    if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
-    PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 2, __pyx_L1_error)
+    PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
     if (!PyDict_GetItemString(modules, "SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main")) {
-      if (unlikely(PyDict_SetItemString(modules, "SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main", __pyx_m) < 0)) __PYX_ERR(0, 2, __pyx_L1_error)
+      if (unlikely(PyDict_SetItemString(modules, "SerpentOzymandiasGameAgentPlugin.files.helpers.state_machine.main", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
   /*--- Builtin init code ---*/
-  if (__Pyx_InitCachedBuiltins() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_InitCachedBuiltins() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Constants init code ---*/
-  if (__Pyx_InitCachedConstants() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_InitCachedConstants() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Global init code ---*/
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
@@ -2343,125 +3184,211 @@ PyMODINIT_FUNC PyInit_main(void)
   /*--- Function import code ---*/
   /*--- Execution code ---*/
   #if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
-  if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":6
- * interfaces with the ML agent to decide the action to take
- * """
- * class StateMachine:             # <<<<<<<<<<<<<<
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):
- *     # initialize class
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":1
+ * import tensorflow as tf             # <<<<<<<<<<<<<<
+ * import numpy as np
+ * import keras
  */
-  __pyx_t_1 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_StateMachine, __pyx_n_s_StateMachine, (PyObject *) NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, (PyObject *) NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_tensorflow, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_tf, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":2
+ * import tensorflow as tf
+ * import numpy as np             # <<<<<<<<<<<<<<
+ * import keras
+ * import cv2
+ */
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":3
+ * import tensorflow as tf
+ * import numpy as np
+ * import keras             # <<<<<<<<<<<<<<
+ * import cv2
+ * 
+ */
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_keras, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_keras, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":4
+ * import numpy as np
+ * import keras
+ * import cv2             # <<<<<<<<<<<<<<
+ * 
+ * from ..classifier.main import Classifier
+ */
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_cv2, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cv2, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":6
+ * import cv2
+ * 
+ * from ..classifier.main import Classifier             # <<<<<<<<<<<<<<
+ * from ..rf_learner.main import Learner
+ * 
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_n_s_Classifier);
+  __Pyx_GIVEREF(__pyx_n_s_Classifier);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_Classifier);
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_classifier_main, __pyx_t_1, 2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_Classifier); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Classifier, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":7
+ * 
+ * from ..classifier.main import Classifier
+ * from ..rf_learner.main import Learner             # <<<<<<<<<<<<<<
+ * 
+ * """
+ */
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_n_s_Learner);
+  __Pyx_GIVEREF(__pyx_n_s_Learner);
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_Learner);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_rf_learner_main, __pyx_t_2, 2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_Learner); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Learner, __pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":19
+ * + learner give 'click' location takes resource and population delta
+ * """
+ * class StateMachine:             # <<<<<<<<<<<<<<
+ *   def __init__(self, api):
+ *     # initialize class
+ */
+  __pyx_t_1 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_StateMachine, __pyx_n_s_StateMachine, (PyObject *) NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, (PyObject *) NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":20
  * """
  * class StateMachine:
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):             # <<<<<<<<<<<<<<
+ *   def __init__(self, api):             # <<<<<<<<<<<<<<
  *     # initialize class
- *     self.brain = ml_build # define the ml model to govern building logic
+ *     self.hands = api
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_1__init__, 0, __pyx_n_s_StateMachine___init, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_1__init__, 0, __pyx_n_s_StateMachine___init, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__7)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_init, __pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_init, __pyx_t_2) < 0) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":16
- *     self.free_unit = True
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":39
+ *     self.acted = False
  * 
- *   def take_action(self, focus):             # <<<<<<<<<<<<<<
+ *   def take_action(self, game_frame):             # <<<<<<<<<<<<<<
  *     # Fuzzy logic for determining the action to take
- *     self._focus = focus
+ *     self._focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action, 0, __pyx_n_s_StateMachine_take_action, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__4)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_3take_action, 0, __pyx_n_s_StateMachine_take_action, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_take_action, __pyx_t_2) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_take_action, __pyx_t_2) < 0) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":38
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":61
  * 
  *   #------ ------ Getter/Setter Functions ------ ------
  *   def get_focus(self):             # <<<<<<<<<<<<<<
  *     # determine what has current focus
  *     return self._focus
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_5get_focus, 0, __pyx_n_s_StateMachine_get_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__6)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_5get_focus, 0, __pyx_n_s_StateMachine_get_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_get_focus, __pyx_t_2) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_get_focus, __pyx_t_2) < 0) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":42
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":65
  *     return self._focus
  * 
  *   def set_focus(self, focus):             # <<<<<<<<<<<<<<
  *     # set the focus
  *     self._focus = focus
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_7set_focus, 0, __pyx_n_s_StateMachine_set_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_7set_focus, 0, __pyx_n_s_StateMachine_set_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_set_focus, __pyx_t_2) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_set_focus, __pyx_t_2) < 0) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":47
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":70
  * 
  *   #------ ------ Action Functions ------ ------
  *   def focus(self):             # <<<<<<<<<<<<<<
  *     # focus on something
- *     self.hands.GameAction.make_random_selection()
+ *     #self.soul.act()
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_9focus, 0, __pyx_n_s_StateMachine_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__10)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_9focus, 0, __pyx_n_s_StateMachine_focus, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_focus, __pyx_t_2) < 0) __PYX_ERR(0, 47, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_focus_2, __pyx_t_2) < 0) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":51
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":76
  *     self.hands.GameAction.make_random_selection()
  * 
  *   def create(self):             # <<<<<<<<<<<<<<
  *     # create unit or research tech at building
  *     self.hands.GameAction.make_random_build()
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_11create, 0, __pyx_n_s_StateMachine_create, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__12)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_11create, 0, __pyx_n_s_StateMachine_create, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_create, __pyx_t_2) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_create, __pyx_t_2) < 0) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":55
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":80
  *     self.hands.GameAction.make_random_build()
  * 
- *   def handle_unit_action(self):             # <<<<<<<<<<<<<<
+ *   def handle_unit_action(self, frame):             # <<<<<<<<<<<<<<
  *     # handle the decision for unit
  *     # (A) go to point (B) build at point
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action, 0, __pyx_n_s_StateMachine_handle_unit_action, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__14)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_32SerpentOzymandiasGameAgentPlugin_5files_7helpers_13state_machine_4main_12StateMachine_13handle_unit_action, 0, __pyx_n_s_StateMachine_handle_unit_action, NULL, __pyx_n_s_SerpentOzymandiasGameAgentPlugin, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_handle_unit_action, __pyx_t_2) < 0) __PYX_ERR(0, 55, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_handle_unit_action, __pyx_t_2) < 0) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":6
- * interfaces with the ML agent to decide the action to take
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":19
+ * + learner give 'click' location takes resource and population delta
  * """
  * class StateMachine:             # <<<<<<<<<<<<<<
- *   def __init__(self, ml_agent, ml_unit, ml_build, api):
+ *   def __init__(self, api):
  *     # initialize class
  */
-  __pyx_t_2 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_StateMachine, __pyx_empty_tuple, __pyx_t_1, NULL, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_StateMachine, __pyx_empty_tuple, __pyx_t_1, NULL, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_StateMachine, __pyx_t_2) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_StateMachine, __pyx_t_2) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":2
- * 
- * """             # <<<<<<<<<<<<<<
- * Game agent state machine
- * interfaces with the ML agent to decide the action to take
+  /* "SerpentOzymandiasGameAgentPlugin/files/helpers/state_machine/main.pyx":1
+ * import tensorflow as tf             # <<<<<<<<<<<<<<
+ * import numpy as np
+ * import keras
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /*--- Wrapped vars code ---*/
@@ -2647,154 +3574,40 @@ bad:
     return -1;
 }
 
-/* BytesEquals */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY
-    return PyObject_RichCompareBool(s1, s2, equals);
+/* GetBuiltinName */
+static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
+    PyObject* result = __Pyx_PyObject_GetAttrStr(__pyx_b, name);
+    if (unlikely(!result)) {
+        PyErr_Format(PyExc_NameError,
+#if PY_MAJOR_VERSION >= 3
+            "name '%U' is not defined", name);
 #else
-    if (s1 == s2) {
-        return (equals == Py_EQ);
-    } else if (PyBytes_CheckExact(s1) & PyBytes_CheckExact(s2)) {
-        const char *ps1, *ps2;
-        Py_ssize_t length = PyBytes_GET_SIZE(s1);
-        if (length != PyBytes_GET_SIZE(s2))
-            return (equals == Py_NE);
-        ps1 = PyBytes_AS_STRING(s1);
-        ps2 = PyBytes_AS_STRING(s2);
-        if (ps1[0] != ps2[0]) {
-            return (equals == Py_NE);
-        } else if (length == 1) {
-            return (equals == Py_EQ);
-        } else {
-            int result;
-#if CYTHON_USE_UNICODE_INTERNALS
-            Py_hash_t hash1, hash2;
-            hash1 = ((PyBytesObject*)s1)->ob_shash;
-            hash2 = ((PyBytesObject*)s2)->ob_shash;
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                return (equals == Py_NE);
-            }
+            "name '%.200s' is not defined", PyString_AS_STRING(name));
 #endif
-            result = memcmp(ps1, ps2, (size_t)length);
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & PyBytes_CheckExact(s2)) {
-        return (equals == Py_NE);
-    } else if ((s2 == Py_None) & PyBytes_CheckExact(s1)) {
-        return (equals == Py_NE);
-    } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
     }
-#endif
+    return result;
 }
 
-/* UnicodeEquals */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY
-    return PyObject_RichCompareBool(s1, s2, equals);
-#else
-#if PY_MAJOR_VERSION < 3
-    PyObject* owned_ref = NULL;
-#endif
-    int s1_is_unicode, s2_is_unicode;
-    if (s1 == s2) {
-        goto return_eq;
-    }
-    s1_is_unicode = PyUnicode_CheckExact(s1);
-    s2_is_unicode = PyUnicode_CheckExact(s2);
-#if PY_MAJOR_VERSION < 3
-    if ((s1_is_unicode & (!s2_is_unicode)) && PyString_CheckExact(s2)) {
-        owned_ref = PyUnicode_FromObject(s2);
-        if (unlikely(!owned_ref))
-            return -1;
-        s2 = owned_ref;
-        s2_is_unicode = 1;
-    } else if ((s2_is_unicode & (!s1_is_unicode)) && PyString_CheckExact(s1)) {
-        owned_ref = PyUnicode_FromObject(s1);
-        if (unlikely(!owned_ref))
-            return -1;
-        s1 = owned_ref;
-        s1_is_unicode = 1;
-    } else if (((!s2_is_unicode) & (!s1_is_unicode))) {
-        return __Pyx_PyBytes_Equals(s1, s2, equals);
-    }
-#endif
-    if (s1_is_unicode & s2_is_unicode) {
-        Py_ssize_t length;
-        int kind;
-        void *data1, *data2;
-        if (unlikely(__Pyx_PyUnicode_READY(s1) < 0) || unlikely(__Pyx_PyUnicode_READY(s2) < 0))
-            return -1;
-        length = __Pyx_PyUnicode_GET_LENGTH(s1);
-        if (length != __Pyx_PyUnicode_GET_LENGTH(s2)) {
-            goto return_ne;
-        }
-#if CYTHON_USE_UNICODE_INTERNALS
-        {
-            Py_hash_t hash1, hash2;
-        #if CYTHON_PEP393_ENABLED
-            hash1 = ((PyASCIIObject*)s1)->hash;
-            hash2 = ((PyASCIIObject*)s2)->hash;
-        #else
-            hash1 = ((PyUnicodeObject*)s1)->hash;
-            hash2 = ((PyUnicodeObject*)s2)->hash;
-        #endif
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                goto return_ne;
-            }
-        }
-#endif
-        kind = __Pyx_PyUnicode_KIND(s1);
-        if (kind != __Pyx_PyUnicode_KIND(s2)) {
-            goto return_ne;
-        }
-        data1 = __Pyx_PyUnicode_DATA(s1);
-        data2 = __Pyx_PyUnicode_DATA(s2);
-        if (__Pyx_PyUnicode_READ(kind, data1, 0) != __Pyx_PyUnicode_READ(kind, data2, 0)) {
-            goto return_ne;
-        } else if (length == 1) {
-            goto return_eq;
-        } else {
-            int result = memcmp(data1, data2, (size_t)(length * kind));
-            #if PY_MAJOR_VERSION < 3
-            Py_XDECREF(owned_ref);
-            #endif
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & s2_is_unicode) {
-        goto return_ne;
-    } else if ((s2 == Py_None) & s1_is_unicode) {
-        goto return_ne;
+/* GetModuleGlobalName */
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
+    PyObject *result;
+#if !CYTHON_AVOID_BORROWED_REFS
+    result = PyDict_GetItem(__pyx_d, name);
+    if (likely(result)) {
+        Py_INCREF(result);
     } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
-    }
-return_eq:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_EQ);
-return_ne:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_NE);
+#else
+    result = PyObject_GetItem(__pyx_d, name);
+    if (!result) {
+        PyErr_Clear();
 #endif
+        result = __Pyx_GetBuiltinName(name);
+    }
+    return result;
 }
 
 /* PyCFunctionFastCall */
-#if CYTHON_FAST_PYCCALL
+  #if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
     PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
     PyCFunction meth = PyCFunction_GET_FUNCTION(func);
@@ -2817,7 +3630,7 @@ static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, P
 #endif
 
 /* PyFunctionFastCall */
-#if CYTHON_FAST_PYCALL
+  #if CYTHON_FAST_PYCALL
 #include "frameobject.h"
 static PyObject* __Pyx_PyFunction_FastCallNoKw(PyCodeObject *co, PyObject **args, Py_ssize_t na,
                                                PyObject *globals) {
@@ -2937,7 +3750,7 @@ done:
 #endif
 
 /* PyObjectCall */
-#if CYTHON_COMPILING_IN_CPYTHON
+  #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
     PyObject *result;
     ternaryfunc call = func->ob_type->tp_call;
@@ -2957,7 +3770,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 #endif
 
 /* PyObjectCallMethO */
-#if CYTHON_COMPILING_IN_CPYTHON
+  #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
     PyObject *self, *result;
     PyCFunction cfunc;
@@ -2977,7 +3790,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
 #endif
 
 /* PyObjectCallOneArg */
-#if CYTHON_COMPILING_IN_CPYTHON
+  #if CYTHON_COMPILING_IN_CPYTHON
 static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
     PyObject *result;
     PyObject *args = PyTuple_New(1);
@@ -3017,7 +3830,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 #endif
 
 /* PyObjectCallNoArg */
-#if CYTHON_COMPILING_IN_CPYTHON
+  #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
 #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(func)) {
@@ -3037,8 +3850,302 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
 }
 #endif
 
+/* BytesEquals */
+    static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
+#if CYTHON_COMPILING_IN_PYPY
+    return PyObject_RichCompareBool(s1, s2, equals);
+#else
+    if (s1 == s2) {
+        return (equals == Py_EQ);
+    } else if (PyBytes_CheckExact(s1) & PyBytes_CheckExact(s2)) {
+        const char *ps1, *ps2;
+        Py_ssize_t length = PyBytes_GET_SIZE(s1);
+        if (length != PyBytes_GET_SIZE(s2))
+            return (equals == Py_NE);
+        ps1 = PyBytes_AS_STRING(s1);
+        ps2 = PyBytes_AS_STRING(s2);
+        if (ps1[0] != ps2[0]) {
+            return (equals == Py_NE);
+        } else if (length == 1) {
+            return (equals == Py_EQ);
+        } else {
+            int result;
+#if CYTHON_USE_UNICODE_INTERNALS
+            Py_hash_t hash1, hash2;
+            hash1 = ((PyBytesObject*)s1)->ob_shash;
+            hash2 = ((PyBytesObject*)s2)->ob_shash;
+            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
+                return (equals == Py_NE);
+            }
+#endif
+            result = memcmp(ps1, ps2, (size_t)length);
+            return (equals == Py_EQ) ? (result == 0) : (result != 0);
+        }
+    } else if ((s1 == Py_None) & PyBytes_CheckExact(s2)) {
+        return (equals == Py_NE);
+    } else if ((s2 == Py_None) & PyBytes_CheckExact(s1)) {
+        return (equals == Py_NE);
+    } else {
+        int result;
+        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
+        if (!py_result)
+            return -1;
+        result = __Pyx_PyObject_IsTrue(py_result);
+        Py_DECREF(py_result);
+        return result;
+    }
+#endif
+}
+
+/* UnicodeEquals */
+    static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
+#if CYTHON_COMPILING_IN_PYPY
+    return PyObject_RichCompareBool(s1, s2, equals);
+#else
+#if PY_MAJOR_VERSION < 3
+    PyObject* owned_ref = NULL;
+#endif
+    int s1_is_unicode, s2_is_unicode;
+    if (s1 == s2) {
+        goto return_eq;
+    }
+    s1_is_unicode = PyUnicode_CheckExact(s1);
+    s2_is_unicode = PyUnicode_CheckExact(s2);
+#if PY_MAJOR_VERSION < 3
+    if ((s1_is_unicode & (!s2_is_unicode)) && PyString_CheckExact(s2)) {
+        owned_ref = PyUnicode_FromObject(s2);
+        if (unlikely(!owned_ref))
+            return -1;
+        s2 = owned_ref;
+        s2_is_unicode = 1;
+    } else if ((s2_is_unicode & (!s1_is_unicode)) && PyString_CheckExact(s1)) {
+        owned_ref = PyUnicode_FromObject(s1);
+        if (unlikely(!owned_ref))
+            return -1;
+        s1 = owned_ref;
+        s1_is_unicode = 1;
+    } else if (((!s2_is_unicode) & (!s1_is_unicode))) {
+        return __Pyx_PyBytes_Equals(s1, s2, equals);
+    }
+#endif
+    if (s1_is_unicode & s2_is_unicode) {
+        Py_ssize_t length;
+        int kind;
+        void *data1, *data2;
+        if (unlikely(__Pyx_PyUnicode_READY(s1) < 0) || unlikely(__Pyx_PyUnicode_READY(s2) < 0))
+            return -1;
+        length = __Pyx_PyUnicode_GET_LENGTH(s1);
+        if (length != __Pyx_PyUnicode_GET_LENGTH(s2)) {
+            goto return_ne;
+        }
+#if CYTHON_USE_UNICODE_INTERNALS
+        {
+            Py_hash_t hash1, hash2;
+        #if CYTHON_PEP393_ENABLED
+            hash1 = ((PyASCIIObject*)s1)->hash;
+            hash2 = ((PyASCIIObject*)s2)->hash;
+        #else
+            hash1 = ((PyUnicodeObject*)s1)->hash;
+            hash2 = ((PyUnicodeObject*)s2)->hash;
+        #endif
+            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
+                goto return_ne;
+            }
+        }
+#endif
+        kind = __Pyx_PyUnicode_KIND(s1);
+        if (kind != __Pyx_PyUnicode_KIND(s2)) {
+            goto return_ne;
+        }
+        data1 = __Pyx_PyUnicode_DATA(s1);
+        data2 = __Pyx_PyUnicode_DATA(s2);
+        if (__Pyx_PyUnicode_READ(kind, data1, 0) != __Pyx_PyUnicode_READ(kind, data2, 0)) {
+            goto return_ne;
+        } else if (length == 1) {
+            goto return_eq;
+        } else {
+            int result = memcmp(data1, data2, (size_t)(length * kind));
+            #if PY_MAJOR_VERSION < 3
+            Py_XDECREF(owned_ref);
+            #endif
+            return (equals == Py_EQ) ? (result == 0) : (result != 0);
+        }
+    } else if ((s1 == Py_None) & s2_is_unicode) {
+        goto return_ne;
+    } else if ((s2 == Py_None) & s1_is_unicode) {
+        goto return_ne;
+    } else {
+        int result;
+        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
+        if (!py_result)
+            return -1;
+        result = __Pyx_PyObject_IsTrue(py_result);
+        Py_DECREF(py_result);
+        return result;
+    }
+return_eq:
+    #if PY_MAJOR_VERSION < 3
+    Py_XDECREF(owned_ref);
+    #endif
+    return (equals == Py_EQ);
+return_ne:
+    #if PY_MAJOR_VERSION < 3
+    Py_XDECREF(owned_ref);
+    #endif
+    return (equals == Py_NE);
+#endif
+}
+
+/* RaiseTooManyValuesToUnpack */
+    static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    PyErr_Format(PyExc_ValueError,
+                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
+}
+
+/* RaiseNeedMoreValuesToUnpack */
+    static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    PyErr_Format(PyExc_ValueError,
+                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
+                 index, (index == 1) ? "" : "s");
+}
+
+/* IterFinish */
+    static CYTHON_INLINE int __Pyx_IterFinish(void) {
+#if CYTHON_FAST_THREAD_STATE
+    PyThreadState *tstate = PyThreadState_GET();
+    PyObject* exc_type = tstate->curexc_type;
+    if (unlikely(exc_type)) {
+        if (likely(exc_type == PyExc_StopIteration) || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration)) {
+            PyObject *exc_value, *exc_tb;
+            exc_value = tstate->curexc_value;
+            exc_tb = tstate->curexc_traceback;
+            tstate->curexc_type = 0;
+            tstate->curexc_value = 0;
+            tstate->curexc_traceback = 0;
+            Py_DECREF(exc_type);
+            Py_XDECREF(exc_value);
+            Py_XDECREF(exc_tb);
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#else
+    if (unlikely(PyErr_Occurred())) {
+        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
+            PyErr_Clear();
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#endif
+}
+
+/* UnpackItemEndCheck */
+    static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
+    if (unlikely(retval)) {
+        Py_DECREF(retval);
+        __Pyx_RaiseTooManyValuesError(expected);
+        return -1;
+    } else {
+        return __Pyx_IterFinish();
+    }
+    return 0;
+}
+
+/* Import */
+    static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
+    PyObject *empty_list = 0;
+    PyObject *module = 0;
+    PyObject *global_dict = 0;
+    PyObject *empty_dict = 0;
+    PyObject *list;
+    #if PY_VERSION_HEX < 0x03030000
+    PyObject *py_import;
+    py_import = __Pyx_PyObject_GetAttrStr(__pyx_b, __pyx_n_s_import);
+    if (!py_import)
+        goto bad;
+    #endif
+    if (from_list)
+        list = from_list;
+    else {
+        empty_list = PyList_New(0);
+        if (!empty_list)
+            goto bad;
+        list = empty_list;
+    }
+    global_dict = PyModule_GetDict(__pyx_m);
+    if (!global_dict)
+        goto bad;
+    empty_dict = PyDict_New();
+    if (!empty_dict)
+        goto bad;
+    {
+        #if PY_MAJOR_VERSION >= 3
+        if (level == -1) {
+            if (strchr(__Pyx_MODULE_NAME, '.')) {
+                #if PY_VERSION_HEX < 0x03030000
+                PyObject *py_level = PyInt_FromLong(1);
+                if (!py_level)
+                    goto bad;
+                module = PyObject_CallFunctionObjArgs(py_import,
+                    name, global_dict, empty_dict, list, py_level, NULL);
+                Py_DECREF(py_level);
+                #else
+                module = PyImport_ImportModuleLevelObject(
+                    name, global_dict, empty_dict, list, 1);
+                #endif
+                if (!module) {
+                    if (!PyErr_ExceptionMatches(PyExc_ImportError))
+                        goto bad;
+                    PyErr_Clear();
+                }
+            }
+            level = 0;
+        }
+        #endif
+        if (!module) {
+            #if PY_VERSION_HEX < 0x03030000
+            PyObject *py_level = PyInt_FromLong(level);
+            if (!py_level)
+                goto bad;
+            module = PyObject_CallFunctionObjArgs(py_import,
+                name, global_dict, empty_dict, list, py_level, NULL);
+            Py_DECREF(py_level);
+            #else
+            module = PyImport_ImportModuleLevelObject(
+                name, global_dict, empty_dict, list, level);
+            #endif
+        }
+    }
+bad:
+    #if PY_VERSION_HEX < 0x03030000
+    Py_XDECREF(py_import);
+    #endif
+    Py_XDECREF(empty_list);
+    Py_XDECREF(empty_dict);
+    return module;
+}
+
+/* ImportFrom */
+    static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
+    PyObject* value = __Pyx_PyObject_GetAttrStr(module, name);
+    if (unlikely(!value) && PyErr_ExceptionMatches(PyExc_AttributeError)) {
+        PyErr_Format(PyExc_ImportError,
+        #if PY_MAJOR_VERSION < 3
+            "cannot import name %.230s", PyString_AS_STRING(name));
+        #else
+            "cannot import name %S", name);
+        #endif
+    }
+    return value;
+}
+
 /* FetchCommonType */
-  static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
+    static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
     PyObject* fake_module;
     PyTypeObject* cached_type = NULL;
     fake_module = PyImport_AddModule((char*) "_cython_" CYTHON_ABI);
@@ -3077,7 +4184,7 @@ bad:
 }
 
 /* CythonFunction */
-  static PyObject *
+    static PyObject *
 __Pyx_CyFunction_get_doc(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *closure)
 {
     if (unlikely(op->func_doc == NULL)) {
@@ -3660,7 +4767,7 @@ static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, Py
 }
 
 /* CalculateMetaclass */
-      static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases) {
+        static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases) {
     Py_ssize_t i, nbases = PyTuple_GET_SIZE(bases);
     for (i=0; i < nbases; i++) {
         PyTypeObject *tmptype;
@@ -3699,7 +4806,7 @@ static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, Py
 }
 
 /* Py3ClassCreate */
-      static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name,
+        static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name,
                                            PyObject *qualname, PyObject *mkw, PyObject *modname, PyObject *doc) {
     PyObject *ns;
     if (metaclass) {
@@ -3766,7 +4873,7 @@ static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObj
 }
 
 /* CLineInTraceback */
-      static int __Pyx_CLineForTraceback(int c_line) {
+        static int __Pyx_CLineForTraceback(int c_line) {
 #ifdef CYTHON_CLINE_IN_TRACEBACK
     return ((CYTHON_CLINE_IN_TRACEBACK)) ? c_line : 0;
 #else
@@ -3802,7 +4909,7 @@ static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObj
 }
 
 /* CodeObjectCache */
-      static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
+        static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;
     if (end >= 0 && code_line > entries[end].code_line) {
         return count;
@@ -3882,7 +4989,7 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object) {
 }
 
 /* AddTraceback */
-      #include "compile.h"
+        #include "compile.h"
 #include "frameobject.h"
 #include "traceback.h"
 static PyCodeObject* __Pyx_CreateCodeObjectForTraceback(
@@ -3966,7 +5073,7 @@ bad:
 }
 
 /* CIntToPy */
-      static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+        static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
     if (is_unsigned) {
@@ -3997,7 +5104,7 @@ bad:
 }
 
 /* CIntFromPyVerify */
-      #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+        #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
 #define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
@@ -4019,7 +5126,7 @@ bad:
     }
 
 /* CIntFromPy */
-      static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
+        static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -4208,7 +5315,7 @@ raise_neg_overflow:
 }
 
 /* CIntFromPy */
-      static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
+        static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -4397,7 +5504,7 @@ raise_neg_overflow:
 }
 
 /* CheckBinaryVersion */
-      static int __Pyx_check_binary_version(void) {
+        static int __Pyx_check_binary_version(void) {
     char ctversion[4], rtversion[4];
     PyOS_snprintf(ctversion, 4, "%d.%d", PY_MAJOR_VERSION, PY_MINOR_VERSION);
     PyOS_snprintf(rtversion, 4, "%s", Py_GetVersion());
@@ -4413,7 +5520,7 @@ raise_neg_overflow:
 }
 
 /* InitStrings */
-      static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
+        static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
     while (t->p) {
         #if PY_MAJOR_VERSION < 3
         if (t->is_unicode) {

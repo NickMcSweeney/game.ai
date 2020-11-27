@@ -25,6 +25,14 @@ class ZeroADAPI(GameAPI):
         )
         text = serpent.ocr.perform_ocr(region_image)
         return text
+
+    def get_window(self):
+        # get the window dimensions
+        return (self.game.window_geometry["width"], self.game.window_geometry["height"])
+
+    def get_game_frame(self):
+        # return the current game frame
+        return self.game.grab_latest_frame()        
         
     def my_api_function(self):
         print(self.game)

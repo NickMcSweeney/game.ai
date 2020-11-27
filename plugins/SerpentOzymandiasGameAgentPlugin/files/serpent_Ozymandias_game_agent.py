@@ -4,8 +4,6 @@ import random
 from serpent.game_agent import GameAgent
 from serpent.input_controller import MouseButton
 
-from .helpers.classifier.main import Classifier
-from .helpers.rf_learner.main import Learner
 from .helpers.state_machine.main import StateMachine
 
 class SerpentOzymandiasGameAgent(GameAgent):
@@ -21,11 +19,7 @@ class SerpentOzymandiasGameAgent(GameAgent):
         # define the current area of the game
         #self.context = "main_menu"
         #self.context = "playing_game"
-        self._focus_classifier = Classifier()
-        rf_alpha = Learner(3, 10, 1)
-        rf_beta_unit = Learner(10, 10, 1)
-        rf_beta_building = Learner(10, 10, 1)
-        self._sm = StateMachine(rf_alpha, rf_beta_unit, rf_beta_building, self.game.api)
+        self._sm = StateMachine(self.game.api)
 
     def handle_play(self, game_frame):
         """
@@ -53,11 +47,7 @@ class SerpentOzymandiasGameAgent(GameAgent):
         self.game.api.GameInterface.update_iron_score()
         self.game.api.GameInterface.update_population_score()
 
-        focus = self._focus_classifier.classify(game_frame.half_resolution_frame)
-
-        print(focus)
-
-        self._sm.take_action(focus)
+        self._sm.take_action(game_frame)
         
         #self.game.api.GameAction.make_random_move()
 
